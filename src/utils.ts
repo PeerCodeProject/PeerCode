@@ -7,6 +7,7 @@ export async function input(inputter: () => Promise<string | undefined | null>) 
     if (!result) {
         throw new Error("Input Error");
     }
+    
     return result;
 }
 

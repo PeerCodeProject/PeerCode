@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { SessionManager } from './session/SessionManager';
-import { YjsConnector } from './connector/YJSConnector';
 import { initGlobal } from './utils';
-const SIGNALING_SERVERURL = "ws://localhost:4444";
+import { ConnectorFactory } from './connector/ConnectorFactory';
+import { config } from './config';
 
 var sessionManager: SessionManager;
 
@@ -45,6 +45,7 @@ function registerCommands(context: vscode.ExtensionContext) {
 }
 
 function init(context: vscode.ExtensionContext) {
-	sessionManager = new SessionManager(new YjsConnector(SIGNALING_SERVERURL));
+	const connFactory = new ConnectorFactory(config);
+	sessionManager = new SessionManager(connFactory.create());
 }
 

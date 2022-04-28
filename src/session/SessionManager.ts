@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import { input } from '../utils';
 import { IConnector } from '../connector/IConnector';
-import { threadId } from 'worker_threads';
-import { YjsConnector } from '../connector/YJSConnector';
 
 export class SessionManager {
 

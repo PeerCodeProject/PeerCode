@@ -37,7 +37,8 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "install": "cross-env DEBUG=true npm install wrtc"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -47,6 +48,7 @@
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "@vscode/test-electron": "^2.1.2",
+    "cross-env": "^7.0.3",
     "eslint": "^8.9.0",
     "glob": "^7.2.0",
     "mocha": "^9.2.1",
@@ -60,10 +62,12 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.9",
     "bufferutil": "^4.0.6",
+    "dotenv": "^16.0.0",
     "google-protobuf": "^3.12.2",
     "mkdirp-promise": "^5.0.1",
     "node-fetch": "^3.2.3",
     "node-pre-gyp": "^0.13.0",
+    "path": "^0.12.7",
     "utf-8-validate": "^5.0.9",
     "wrtc": "^0.4.7",
     "ws": "^7.5.7",
