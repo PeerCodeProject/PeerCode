@@ -2,9 +2,9 @@ import { IConnection } from '../IConnection';
 import { IConnector } from '../IConnector';
 import { YjsConnection } from './YJSConnection';
 import * as Y from 'yjs';
-import { WebrtcProvider } from 'y-webrtc';
+import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
 import { WebsocketProvider } from 'y-websocket';
-import console = require('console');
+import { YjsBinder } from '../../core/Binder';
 
 
 export abstract class YjsConnector implements IConnector {
@@ -27,14 +27,15 @@ export class YWebSocketConnector extends YjsConnector {
         let promise = new Promise<void>((resolve, _reject) => {
             provider.on('status', (event: any) => {
                 let status = event.status;
-                console.debug("status on ws connect" + status);
+                console.debug("status on ws connect:" + status);
                 if (status === "connected") {
-                    console.debug('Connected to' + room);
+                    console.debug('Connected to:' + room);
                     resolve();
                 }
             });
         });
         await promise;
+        let _binder = new YjsBinder(ydoc, username);
         return new YjsConnection(ydoc, username, room);
     }
 
@@ -50,18 +51,10 @@ export class YWebRTCConnector extends YjsConnector {
         console.debug("connecting via webrtc to " + this.signalingServerUrl + " room: " + room + " username: " + username);
         console.debug(process.env);
         process.env['LOG'] = '*';
-
         let ydoc = new Y.Doc();
-        //@ts-ignore
-        const provider = new WebrtcProvider(room, ydoc, {
-            signaling: [this.signalingServerUrl],
-            peerOpts: { wrtc: require('wrtc') }
-        });
-        provider.connect();
+        const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl]);
 
         const awearness = provider.awareness;
-        awearness.setLocalState({ [username]: "test123" });
-        console.log("Id", awearness.clientID);
         awearness.on("change", (x: any) => {
             console.log("change", x);
         });

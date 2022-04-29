@@ -1,1 +1,1 @@
-docker run --name signaling-server -p 4444:4444 signaling-server
+docker run --name signaling-server -p 4444:4444 liquidibrium/signaling-server
