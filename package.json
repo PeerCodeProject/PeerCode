@@ -39,7 +39,8 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "install": "cross-env DEBUG=true npm install wrtc",
-    "init": "node ./scripts/init.js"
+    "init": "node ./scripts/init.js",
+    "build-go": "cd docker && cross-env GOOS=js GOARCH=wasm go build -o main.wasm"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",

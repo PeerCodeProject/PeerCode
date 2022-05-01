@@ -1,4 +1,4 @@
-package docker
+package core
 
 import (
 	"bufio"

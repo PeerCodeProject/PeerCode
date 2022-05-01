@@ -1,4 +1,4 @@
-package docker
+package core
 
 import (
 	"bytes"
@@ -118,34 +118,28 @@ func GetContext(filePath string) io.Reader {
 
 func BuildAndRun(imagename, dockerFilePath string) string {
 	client, err := newDockerClient()
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	defer client.Close()
 
 	err, rd := client.BuildImage(dockerFilePath, imagename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	err, _ = printReader(rd)
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	id, err := client.CreateContainer(imagename)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	_, err = client.StartContainer(id)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	logs, err := client.GetContainerLogs(id)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	defer client.RemoveContainer(id)
 	defer client.StopContainer(id)
 	return logs
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
