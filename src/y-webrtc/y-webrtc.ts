@@ -186,7 +186,9 @@ const broadcastWebrtcConn = (room: Room, m: Uint8Array) => {
   room.webrtcConns.forEach((conn) => {
     try {
       conn.peer.send(m);
-    } catch (e) { }
+    } catch (e) {
+      console.log("error in broadcastWebrtcConn ", e);
+    }
   });
 };
 
@@ -281,6 +283,7 @@ const broadcastBcMessage = (room: Room, m: Uint8Array) =>
     .then((data) => room.mux(() => bc.publish(room.name, data)));
 
 const broadcastRoomMessage = (room: Room, m: Uint8Array) => {
+  console.log("broadcastRoomMessage room:", room);
   if (room.bcconnected) {
     broadcastBcMessage(room, m);
   }
@@ -323,7 +326,7 @@ export class Room {
   bcconnected: boolean;
 
 
-  constructor(public doc: Y.Doc,public provider: WebrtcProvider,public name: string,public key: CryptoKey | null) {
+  constructor(public doc: Y.Doc, public provider: WebrtcProvider, public name: string, public key: CryptoKey | null) {
     /**
      * Do not assume that peerId is unique. This is only meant for sending signaling messages.
      */
@@ -341,8 +344,8 @@ export class Room {
   }
 
   connect() {
-    this.doc.on("update", this._docUpdateHandler);
-    this.awareness.on("update", this._awarenessUpdateHandler);
+    this.doc.on("update", this._docUpdateHandler.bind(this));
+    this.awareness.on("update", this._awarenessUpdateHandler.bind(this));
     // signal through all available signaling connections
     announceSignalingInfo(this);
     const roomName = this.name;
@@ -397,8 +400,8 @@ export class Room {
 
     bc.unsubscribe(this.name, this._bcSubscriber);
     this.bcconnected = false;
-    this.doc.off("update", this._docUpdateHandler);
-    this.awareness.off("update", this._awarenessUpdateHandler);
+    this.doc.off("update", this._docUpdateHandler.bind(this));
+    this.awareness.off("update", this._awarenessUpdateHandler.bind(this));
     this.webrtcConns.forEach((conn) => conn.destroy());
   }
 
@@ -425,6 +428,7 @@ export class Room {
   *
   */
   private _docUpdateHandler(update: Uint8Array, _origin: any) {
+    console.log("_docUpdateHandler origin", _origin, this);
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
     syncProtocol.writeUpdate(encoder, update);
@@ -436,6 +440,7 @@ export class Room {
    *
    */
   private _awarenessUpdateHandler = ({ added, updated, removed }: { added: any; updated: any; removed: any; }, _origin: any) => {
+    console.log("_awarenessUpdateHandler origin", _origin, this);
     const changedClients = added.concat(updated).concat(removed);
     const encoderAwareness = encoding.createEncoder();
     encoding.writeVarUint(encoderAwareness, messageAwareness);
@@ -502,6 +507,7 @@ export class SignalingConn extends ws.WebsocketClient {
     this.on("message", (m: any) => {
       switch (m.type) {
         case "publish": {
+          console.log("on message publish", JSON.stringify(m));
           const roomName = m.topic;
           const room = rooms.get(roomName);
           if (room == null || typeof roomName !== "string") {
@@ -567,9 +573,15 @@ export class SignalingConn extends ws.WebsocketClient {
             execMessage(m.data);
           }
           break;
-        } default:
+        }
+        case "pong": {
+          // console.log("on message pong");
+          break;
+        }
+        default: {
           console.warn(`unknown message type ${m.type}`, JSON.stringify(m));
           break;
+        }
       }
     });
     this.on("disconnect", () => log(`disconnect (${url})`));
@@ -578,7 +590,7 @@ export class SignalingConn extends ws.WebsocketClient {
 
 export class WebrtcProvider extends Observable<string> {
 
-  awareness: any;
+  awareness: Awareness;
   maxConns: any;
   filterBcConns: boolean;
   shouldConnect: boolean;
@@ -592,11 +604,11 @@ export class WebrtcProvider extends Observable<string> {
     public roomName: string,
     public doc: Y.Doc,
     public _signalingUrls: string[] = [
-        "wss://signaling.yjs.dev",
-        "wss://y-webrtc-signaling-eu.herokuapp.com",
-        "wss://y-webrtc-signaling-us.herokuapp.com",
+      "wss://signaling.yjs.dev",
+      "wss://y-webrtc-signaling-eu.herokuapp.com",
+      "wss://y-webrtc-signaling-us.herokuapp.com",
     ],
-    ) {
+  ) {
     super();
     this.filterBcConns = true;
     this.awareness = new awarenessProtocol.Awareness(doc);
@@ -604,17 +616,7 @@ export class WebrtcProvider extends Observable<string> {
     this.signalingConns = [];
     this.maxConns = 20 + math.floor(random.rand() * 15);
     this.peerOpts = { wrtc: require("wrtc") };
-    let password = null;
-    if (password) {
-      var key = await cryptoutils.deriveKey(password, roomName);
-    }
-    this.key = password
-    //   ? cryptoutils.deriveKey(password, roomName)
-    //   : promise.resolve(null);
-    
 
-    // this.room = null;
-    // this.key.then((key) => {
     this.room = openRoom(doc, this, roomName, null);
     this.connect();
     if (this.shouldConnect) {
@@ -622,13 +624,12 @@ export class WebrtcProvider extends Observable<string> {
     } else {
       this.room.disconnect();
     }
-    // });
 
     this.destroy = this.destroy.bind(this);
     doc.on("destroy", this.destroy);
   }
 
-  get connected():boolean {
+  get connected(): boolean {
     return this.room !== null && this.shouldConnect;
   }
 
@@ -666,8 +667,8 @@ export class WebrtcProvider extends Observable<string> {
     this.doc.off("destroy", this.destroy);
     // need to wait for key before deleting room
     // this.key.then(() => {
-      this.room?.destroy();
-      rooms.delete(this.roomName);
+    this.room?.destroy();
+    rooms.delete(this.roomName);
     // });
     super.destroy();
   }

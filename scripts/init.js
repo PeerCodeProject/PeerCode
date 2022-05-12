@@ -3,7 +3,7 @@ const path = require("path");
 // npm install --build-from-source
 // path join
 
-const DEBUG_WRTC_FOLDER = path.join(
+ const DEBUG_WRTC_FOLDER = path.join(
   __dirname,
   "..",
   "node_modules",
