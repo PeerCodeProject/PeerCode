@@ -3,8 +3,8 @@ import { SessionManager } from './session/SessionManager';
 import { initGlobal } from './utils';
 import { ConnectorFactory } from './connector/ConnectorFactory';
 import { config } from './config';
+import { PeerCodeSessionTreeDataProvider } from './ui/tree/peerCodeTreeDataProvider';
 
-var sessionManager: SessionManager;
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -15,8 +15,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	initGlobal();
 	init(context);
-	registerCommands(context);
-	await sessionManager.createSession();
+	// await sessionManager.createSession();
+	console.log('peercode eneded activation');
 }
 
 
@@ -24,7 +24,8 @@ export function deactivate() {
 	// @ts-ignore
 }
 
-function registerCommands(context: vscode.ExtensionContext) {
+function registerCommands(context: vscode.ExtensionContext, sessionManager: SessionManager) {
+	
 	const disposables = [
 		vscode.commands.registerCommand('peercode.StartSession', async () => {
 			await sessionManager.createSession().catch(err => {
@@ -34,7 +35,7 @@ function registerCommands(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand('peercode.JoinSession', async () => {
-			await sessionManager.createSession().catch(err => {
+			await sessionManager.joinSession().catch(err => {
 				console.log("Error in JoinSession", err);
 				vscode.window.showErrorMessage(err.message);
 			});
@@ -46,6 +47,12 @@ function registerCommands(context: vscode.ExtensionContext) {
 
 function init(context: vscode.ExtensionContext) {
 	const connFactory = new ConnectorFactory(config);
-	sessionManager = new SessionManager(connFactory.create());
+	let sessionManager = new SessionManager(connFactory.create());
+
+	const treeProvider = new PeerCodeSessionTreeDataProvider();
+	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
+
+	registerCommands(context, sessionManager);
+
 }
 

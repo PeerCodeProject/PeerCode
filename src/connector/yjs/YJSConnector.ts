@@ -2,9 +2,8 @@ import { IConnection } from '../IConnection';
 import { IConnector } from '../IConnector';
 import { YjsConnection } from './YJSConnection';
 import * as Y from 'yjs';
-import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
 import { WebsocketProvider } from 'y-websocket';
-import { YjsBinder } from '../../core/Binder';
+import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
 
 
 export abstract class YjsConnector implements IConnector {
@@ -17,6 +16,7 @@ export class YWebSocketConnector extends YjsConnector {
     constructor(private wsServerUrl: string) {
         super();
     }
+
     async connect(username: string, room: string): Promise<IConnection> {
         console.debug("connecting via websocket to " + this.wsServerUrl + " room: " + room + " username: " + username);
         let ydoc = new Y.Doc();
@@ -24,19 +24,23 @@ export class YWebSocketConnector extends YjsConnector {
             {
                 WebSocketPolyfill: require('ws')  // eslint-disable-line 
             });
-        let promise = new Promise<void>((resolve, _reject) => {
+        await this.awaitConnection(provider);
+        console.debug('Connected to:' + room);
+
+        return new YjsConnection(ydoc, username, room);
+    }
+
+
+    private awaitConnection(provider: WebsocketProvider) {
+        return new Promise<void>((resolve, _reject) => {
             provider.on('status', (event: any) => {
                 let status = event.status;
                 console.debug("status on ws connect:" + status);
                 if (status === "connected") {
-                    console.debug('Connected to:' + room);
                     resolve();
                 }
             });
         });
-        await promise;
-        let _binder = new YjsBinder(ydoc, username);
-        return new YjsConnection(ydoc, username, room);
     }
 
 }
@@ -47,31 +51,26 @@ export class YWebRTCConnector extends YjsConnector {
         super();
     }
 
-    connect(username: string, room: string): Promise<IConnection> {
+    async connect(username: string, room: string): Promise<IConnection> {
         console.debug("connecting via webrtc to " + this.signalingServerUrl + " room: " + room + " username: " + username);
-        console.debug(process.env);
-        process.env['LOG'] = '*';
         let ydoc = new Y.Doc();
         const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl]);
-
-        const awearness = provider.awareness;
-        awearness.on("change", (x: any) => {
-            console.log("change", x);
-        });
-        provider.on("synced", (event: any) => {
-            console.log("Synced", event);
-        });
-
-        provider.on("peers", (event: any) => {
-            console.log("peers", event);
-        });
-        let arr = ydoc.getArray("test-Array");
-        arr.push([username]);
-        return new Promise((resolve, _reject) => {
-            provider.on('connected', () => {
-                resolve(new YjsConnection(ydoc, username, room));
-            });
-        });
+        await this.awaitConnection(provider);
+        return new YjsConnection(ydoc, username, room);
 
     }
+    awaitConnection(provider: WebrtcProvider) {
+        return new Promise<void>((resolve, _reject) => {
+            provider.on("synced", (event: any) => {
+                console.log("Synced", event);
+                resolve();
+            });
+
+            provider.on("peers", (event: any) => {
+                console.log("peers", event);
+                resolve();
+            });
+        });
+    }
+
 }
