@@ -1,9 +1,9 @@
-import { IConnection } from '../IConnection';
-import { IConnector } from '../IConnector';
-import { YjsConnection } from './YJSConnection';
-import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
+import * as Y from 'yjs';
+
 import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
+import { IConnection, IConnector } from '../conn';
+import { YjsConnection } from './YJSConnection';
 
 
 export abstract class YjsConnector implements IConnector {

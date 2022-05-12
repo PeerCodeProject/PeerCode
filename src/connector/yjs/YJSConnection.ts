@@ -1,13 +1,15 @@
 import { Doc } from 'yjs';
-import { Session } from '../../session/Session';
-import { IConnection } from '../IConnection';
+import { Session } from '../../session/session';
+import { IConnection } from '../conn';
 export class YjsConnection implements IConnection{
     
-    constructor(private doc:  Doc, private username: string, private room: string){
+    private session: Session;
+    constructor(private doc: Doc, private username: string, private room: string) {
+        this.session = new Session(room);
            
     }
     getSession(): Session {
-        throw new Error('Method not implemented.');
+        return this.session;
     }
 
 }

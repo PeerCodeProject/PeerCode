@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { SessionManager } from './session/SessionManager';
+import { SessionManager } from './session/sessionManager';
 import { initGlobal } from './utils';
-import { ConnectorFactory } from './connector/ConnectorFactory';
+import { ConnectorFactory } from './connector/connectorFactory';
 import { config } from './config';
 import { PeerCodeSessionTreeDataProvider } from './ui/tree/peerCodeTreeDataProvider';
 
@@ -49,7 +49,9 @@ function init(context: vscode.ExtensionContext) {
 	const connFactory = new ConnectorFactory(config);
 	let sessionManager = new SessionManager(connFactory.create());
 
-	const treeProvider = new PeerCodeSessionTreeDataProvider();
+	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);
+	sessionManager.regiterListener(treeProvider);
+
 	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
 
 	registerCommands(context, sessionManager);
