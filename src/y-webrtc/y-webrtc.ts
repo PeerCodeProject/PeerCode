@@ -19,8 +19,6 @@ import * as awarenessProtocol from "y-protocols/awareness";
 import { Awareness } from "y-protocols/awareness";
 import * as cryptoutils from "./crypto";
 import { CryptoKey } from "@peculiar/webcrypto";
-import * as string from 'lib0/string';
-import * as promise from "lib0/promise";
 
 const log = logging.createModuleLogger("y-webrtc");
 
@@ -209,6 +207,7 @@ export class WebrtcConn {
     this.synced = false;
     this.peer = new Peer({ initiator, ...room.provider.peerOpts });
     this.peer.on("signal", (signal) => {
+      log("WebrtcConn signal ", logging.BOLD, remotePeerId);
       publishSignalingMessage(signalingConn, room, {
         to: remotePeerId,
         from: room.peerId,
@@ -217,7 +216,7 @@ export class WebrtcConn {
       });
     });
     this.peer.on("connect", () => {
-      log("connected to ", logging.BOLD, remotePeerId);
+      log("WebrtcConn connected to ", logging.BOLD, remotePeerId);
       this.connected = true;
       // send sync step 1
       const provider = room.provider;
@@ -242,6 +241,7 @@ export class WebrtcConn {
       }
     });
     this.peer.on("close", () => {
+      log("WebrtcConn close ", logging.BOLD, remotePeerId);
       this.connected = false;
       this.closed = true;
       if (room.webrtcConns.has(this.remotePeerId)) {
@@ -261,7 +261,7 @@ export class WebrtcConn {
       announceSignalingInfo(room);
     });
     this.peer.on("error", (err) => {
-      log("Error in connection to ", logging.BOLD, remotePeerId, ": ", err);
+      log("WebrtcConn Error in connection to ", logging.BOLD, remotePeerId, ": ", err);
       announceSignalingInfo(room);
     });
     this.peer.on("data", (data) => {
@@ -510,15 +510,14 @@ export class SignalingConn extends ws.WebsocketClient {
           console.log("on message publish", JSON.stringify(m));
           const roomName = m.topic;
           const room = rooms.get(roomName);
-          if (room == null || typeof roomName !== "string") {
+          if (!room || typeof roomName !== "string") {
             return;
           }
           const execMessage = (data: any) => {
             const webrtcConns = room.webrtcConns;
             const peerId = room.peerId;
             if (
-              data == null ||
-              data.from === peerId ||
+              !data || data.from === peerId ||
               (data.to !== undefined && data.to !== peerId) ||
               room.bcConns.has(data.from)
             ) {

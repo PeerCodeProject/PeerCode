@@ -29,7 +29,7 @@ export class PeerTreeNode extends vscode.TreeItem implements TreeNode {
 
 export class SessionTreeNode extends vscode.TreeItem implements TreeNode {
     constructor(public session: Session) {
-        let state = session.getPeerManager().getPeers().length === 0 ?
+        let state = session.getSessionPeers().length === 0 ?
             vscode.TreeItemCollapsibleState.None :
             vscode.TreeItemCollapsibleState.Expanded;
         super(session.getRoomName(), state);

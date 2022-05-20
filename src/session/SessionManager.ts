@@ -3,17 +3,27 @@ import { input } from '../utils';
 import { BaseObservable } from '../core/observable';
 import { IConnector } from '../connector/conn';
 import { Session, SessionListener } from './session';
+import { FileSharer } from '../core/fs/fileSharer';
 
 export class SessionManager extends BaseObservable<SessionListener> {
-    
+
     private sessions: Session[] = [];
 
-    constructor(private connector: IConnector) {
+    constructor(private connector: IConnector,
+                private fileSharer: FileSharer) {
         super();
-     }
+    }
 
+    async startSession() {
+        if (!this.fileSharer.workspacePath) {
+            console.error("open workspace before starting session");
+            return;
+        }
+        let sess = await this.createSession();
+        await this.fileSharer.shareWorkspace(sess);
+    }
 
-    async createSession() : Promise<Session> {
+    async createSession(): Promise<Session> {
         let { username, roomname } = await getSessionInfo();
 
         let conn = await this.connector.connect(username, roomname);
@@ -27,10 +37,10 @@ export class SessionManager extends BaseObservable<SessionListener> {
         this.notify(async (listener) => listener.onAddSession(session));
     }
 
-    getConnections(): Session[] {
+    getSessions(): Session[] {
         return this.sessions;
     }
-    
+
     async joinSession() {
         await this.createSession();
     }
@@ -39,16 +49,16 @@ export class SessionManager extends BaseObservable<SessionListener> {
 
 
 async function getSessionInfo() {
-    let roomname = await input(async () => {
-        return vscode.window.showInputBox(
-            { prompt: 'Enter Room' }
-        );
-    });
+    // let roomname = await input(async () => {
+    //     return vscode.window.showInputBox(
+    //         { prompt: 'Enter Room' }
+    //     );
+    // });
 
     let username = await input(async () => {
         return vscode.window.showInputBox(
             { prompt: 'Enter your username' }
         );
     });
-    return { username, roomname };
+    return { username, "roomname": "roomname1" };
 }

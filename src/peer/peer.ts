@@ -1,9 +1,9 @@
-import { BaseObservable } from "../core/observable";
+import { BaseObservable } from '../core/observable';
 
 export class Peer {
     constructor(public peername: string) {
 
-     }
+    }
 
 }
 
@@ -14,7 +14,7 @@ export interface PeerConnectionListener {
 
 export class PeerManager extends BaseObservable<PeerConnectionListener> {
 
-    private peers: Peer[] = []; 
+    private peers: Peer[] = [];
 
     async peerJoined(peer: Peer): Promise<void> {
         console.log("peer joined: " + peer);
@@ -23,6 +23,7 @@ export class PeerManager extends BaseObservable<PeerConnectionListener> {
             listener.onPeerAdded(peer);
         });
     }
+
     async peerLeft(peer: Peer): Promise<void> {
         console.log("peer joined: " + peer);
         this.peers = this.peers.filter(p => p !== peer);
