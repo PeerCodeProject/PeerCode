@@ -10,8 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*",
-    "onCommand:peercode.helloWorld"
+    "*"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -26,7 +25,29 @@
         "title": "Join Session",
         "category": "PeerCode"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "peercode.session",
+          "name": "PeerCode"
+        }
+      ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "peercode.JoinSession",
+          "when": "view == peercode.session && viewItem == sessions",
+          "group": "inline"
+        },
+        {
+          "command": "peercode.StartSession",
+          "when": "view == peercode.session && viewItem == sessions",
+          "group": "inline"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

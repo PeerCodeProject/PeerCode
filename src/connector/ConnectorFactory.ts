@@ -1,4 +1,4 @@
-import { IConnector } from './IConnector';
+import { IConnector } from './conn';
 import { YWebRTCConnector, YWebSocketConnector } from './yjs/YJSConnector';
 
 

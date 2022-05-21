@@ -1,10 +1,13 @@
 import * as vscode from 'vscode';
-import { SessionManager } from './session/SessionManager';
-import { initGlobal } from './utils';
-import { ConnectorFactory } from './connector/ConnectorFactory';
-import { config } from './config';
 
-var sessionManager: SessionManager;
+import { config } from './config';
+import { ConnectorFactory } from './connector/connectorFactory';
+import { FileSharer } from './core/fs/fileSharer';
+import { getWorkspacePath } from './core/fs/fileSystemManager';
+import { SessionManager } from './session/sessionManager';
+import { PeerCodeSessionTreeDataProvider } from './ui/tree/peerCodeTreeDataProvider';
+import { initGlobal } from './utils';
+
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -15,8 +18,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	initGlobal();
 	init(context);
-	registerCommands(context);
-	await sessionManager.createSession();
+	// await sessionManager.createSession();
+	console.log('peercode eneded activation');
 }
 
 
@@ -24,17 +27,18 @@ export function deactivate() {
 	// @ts-ignore
 }
 
-function registerCommands(context: vscode.ExtensionContext) {
+function registerCommands(context: vscode.ExtensionContext, sessionManager: SessionManager) {
+
 	const disposables = [
 		vscode.commands.registerCommand('peercode.StartSession', async () => {
-			await sessionManager.createSession().catch(err => {
+			await sessionManager.startSession().catch(err => {
 				console.log("Error in StartSession", err);
 				vscode.window.showErrorMessage(err.message);
 			});
 		}),
 
 		vscode.commands.registerCommand('peercode.JoinSession', async () => {
-			await sessionManager.createSession().catch(err => {
+			await sessionManager.joinSession().catch(err => {
 				console.log("Error in JoinSession", err);
 				vscode.window.showErrorMessage(err.message);
 			});
@@ -46,6 +50,16 @@ function registerCommands(context: vscode.ExtensionContext) {
 
 function init(context: vscode.ExtensionContext) {
 	const connFactory = new ConnectorFactory(config);
-	sessionManager = new SessionManager(connFactory.create());
+	let fileSharer = new FileSharer(getWorkspacePath());
+
+	let sessionManager = new SessionManager(connFactory.create(), fileSharer);
+
+	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);
+	sessionManager.registerListener(treeProvider);
+
+	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
+
+	registerCommands(context, sessionManager);
+
 }
 
