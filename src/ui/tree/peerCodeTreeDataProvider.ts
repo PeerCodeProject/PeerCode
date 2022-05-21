@@ -19,7 +19,7 @@ export class PeerCodeSessionTreeDataProvider implements vscode.TreeDataProvider<
         this._onDidChangeTreeData.fire();
     }
     onAddSession(session: Session): void {
-        session.getPeerManager().regiterListener(this);
+        session.getPeerManager().registerListener(this);
         this._onDidChangeTreeData.fire();
     }
     onRemoveSession(session: Session): void {

@@ -28,7 +28,7 @@ export function deactivate() {
 }
 
 function registerCommands(context: vscode.ExtensionContext, sessionManager: SessionManager) {
-	
+
 	const disposables = [
 		vscode.commands.registerCommand('peercode.StartSession', async () => {
 			await sessionManager.startSession().catch(err => {
@@ -51,11 +51,11 @@ function registerCommands(context: vscode.ExtensionContext, sessionManager: Sess
 function init(context: vscode.ExtensionContext) {
 	const connFactory = new ConnectorFactory(config);
 	let fileSharer = new FileSharer(getWorkspacePath());
-	
+
 	let sessionManager = new SessionManager(connFactory.create(), fileSharer);
 
 	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);
-	sessionManager.regiterListener(treeProvider);
+	sessionManager.registerListener(treeProvider);
 
 	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
 

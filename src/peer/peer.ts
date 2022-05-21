@@ -16,8 +16,8 @@ export class PeerManager extends BaseObservable<PeerConnectionListener> {
 
     private peers: Peer[] = [];
 
-    async peerJoined(peer: Peer): Promise<void> {
-        console.log("peer joined: " + peer);
+    peerJoined(peer: Peer) {
+        console.log("peer joined: " + peer.peername);
         this.peers.push(peer);
         this.notify(async (listener) => {
             listener.onPeerAdded(peer);

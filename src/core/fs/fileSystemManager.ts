@@ -24,13 +24,17 @@ export class FileSystemManager {
     }
 
     public addFile(filePath: string): vscode.Uri | null {
-        var pathToFile = path.join(this.workspacePath, filePath);
+        const pathToFile = path.join(this.workspacePath, filePath);
         if (!makeFileSync(pathToFile)) {
             return null;
         }
         return vscode.Uri.file(pathToFile);
     }
 
+    public getFileUri(filePath: string): vscode.Uri {
+        const pathToFile = path.join(this.workspacePath, filePath);
+        return vscode.Uri.file(pathToFile);
+    }
 
 }
 
@@ -65,7 +69,7 @@ export async function getAllFiles(wsPath: string): Promise<vscode.Uri[]> {
     return vscode.workspace.findFiles(pattern);
 }
 
-export function getUrl(uri: vscode.Uri) {
+export function getFileKeyFromUri(uri: vscode.Uri) {
     let url = uri.fsPath;
     let wspath = getWorkspacePath();
     if (wspath!) {

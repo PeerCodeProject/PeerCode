@@ -4,21 +4,21 @@ import * as error from "lib0/error";
 import * as random from "lib0/random";
 import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
-import { Observable } from "lib0/observable";
+import {Observable} from "lib0/observable";
 import * as logging from "lib0/logging";
 import * as bc from "lib0/broadcastchannel";
 import * as buffer from "lib0/buffer";
 import * as math from "lib0/math";
-import { createMutex } from "lib0/mutex";
+import {createMutex} from "lib0/mutex";
 
 import * as Y from "yjs";
 import * as Peer from "simple-peer";
 
 import * as syncProtocol from "y-protocols/sync";
 import * as awarenessProtocol from "y-protocols/awareness";
-import { Awareness } from "y-protocols/awareness";
+import {Awareness} from "y-protocols/awareness";
 import * as cryptoutils from "./crypto";
-import { CryptoKey } from "@peculiar/webcrypto";
+import {CryptoKey} from "@peculiar/webcrypto";
 
 const log = logging.createModuleLogger("y-webrtc");
 
@@ -219,8 +219,7 @@ export class WebrtcConn {
       log("WebrtcConn connected to ", logging.BOLD, remotePeerId);
       this.connected = true;
       // send sync step 1
-      const provider = room.provider;
-      const doc = provider.doc;
+      const doc = room.provider.doc;
       const awareness = room.awareness;
       let encoder = encoding.createEncoder();
       encoding.writeVarUint(encoder, messageSync);
@@ -292,7 +291,7 @@ const broadcastRoomMessage = (room: Room, m: Uint8Array) => {
 
 const announceSignalingInfo = (room: Room) => {
   signalingConns.forEach((conn) => {
-    // only subcribe if connection is established, otherwise the conn automatically subscribes to all rooms
+    // only subscribe if connection is established, otherwise the conn automatically subscribes to all rooms
     if (conn.connected) {
       conn.send({ type: "subscribe", topics: [room.name] });
       if (room.webrtcConns.size < room.provider.maxConns) {
@@ -348,8 +347,7 @@ export class Room {
     this.awareness.on("update", this._awarenessUpdateHandler.bind(this));
     // signal through all available signaling connections
     announceSignalingInfo(this);
-    const roomName = this.name;
-    bc.subscribe(roomName, this._bcSubscriber);
+    bc.subscribe(this.name, this._bcSubscriber);
     this.bcconnected = true;
     // broadcast peerId via broadcastchannel
     broadcastBcPeerId(this);
