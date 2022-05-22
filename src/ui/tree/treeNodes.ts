@@ -3,11 +3,11 @@ import * as vscode from "vscode";
 import { Peer } from "../../peer/peer";
 import { Session } from "../../session/session";
 
-export interface TreeNode extends vscode.TreeItem { }
+export type TreeNode = vscode.TreeItem;
 
 export class SessionsTreeNode extends vscode.TreeItem implements TreeNode {
     constructor(hasConnections: boolean) {
-        let state = hasConnections ?
+        const state = hasConnections ?
             vscode.TreeItemCollapsibleState.Expanded :
             vscode.TreeItemCollapsibleState.None;
         super("Session", state);
@@ -29,7 +29,7 @@ export class PeerTreeNode extends vscode.TreeItem implements TreeNode {
 
 export class SessionTreeNode extends vscode.TreeItem implements TreeNode {
     constructor(public session: Session) {
-        let state = session.getSessionPeers().length === 0 ?
+        const state = session.getSessionPeers().length === 0 ?
             vscode.TreeItemCollapsibleState.None :
             vscode.TreeItemCollapsibleState.Expanded;
         super(session.getRoomName(), state);

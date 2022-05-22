@@ -12,24 +12,13 @@ export class SessionManager extends BaseObservable<SessionListener> {
 
     private sessions: Session[] = [];
 
-    constructor(private connector: IConnector,
-        private fileSharer: FileSharer) {
+    constructor(private connector: IConnector) {
         super();
     }
 
-    async startSession() {
-        if (!this.fileSharer.workspacePath) {
-            console.error("open workspace before starting session");
-            return;
-        }
-        let sess = await this.createSession();
-        await this.fileSharer.shareWorkspace(sess);
-    }
-
-    async createSession(): Promise<Session> {
-        let { username, roomname } = await getSessionInfo();
-
-        let conn = await this.connector.connect(username, roomname);
+    async createSession(isSessionOwner: boolean = false): Promise<Session> {
+        const { username, roomname } = await getSessionInfo();
+        const conn = await this.connector.connect(username, roomname);
         const session = conn.getSession();
         this.addSession(session);
         return session;
@@ -44,13 +33,6 @@ export class SessionManager extends BaseObservable<SessionListener> {
         return this.sessions;
     }
 
-    async joinSession() {
-        await this.createSession();
-    }
-
-    renderPaint(extensionUri: vscode.Uri, session: Session) {
-        DrawingPanel.render(extensionUri,session.getRoomName(),session.getUsername());
-    }
 }
 
 
@@ -61,7 +43,7 @@ async function getSessionInfo() {
     //     );
     // });
 
-    let username = await input(async () => {
+    const username = await input(async () => {
         return vscode.window.showInputBox(
             { prompt: "Enter your username" }
         );

@@ -4,21 +4,21 @@ import * as error from "lib0/error";
 import * as random from "lib0/random";
 import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
-import {Observable} from "lib0/observable";
+import { Observable } from "lib0/observable";
 import * as logging from "lib0/logging";
 import * as bc from "lib0/broadcastchannel";
 import * as buffer from "lib0/buffer";
 import * as math from "lib0/math";
-import {createMutex} from "lib0/mutex";
+import { createMutex } from "lib0/mutex";
 
 import * as Y from "yjs";
 import * as Peer from "simple-peer";
 
 import * as syncProtocol from "y-protocols/sync";
 import * as awarenessProtocol from "y-protocols/awareness";
-import {Awareness} from "y-protocols/awareness";
+import { Awareness } from "y-protocols/awareness";
 import * as cryptoutils from "./crypto";
-import {CryptoKey} from "@peculiar/webcrypto";
+import { CryptoKey } from "@peculiar/webcrypto";
 
 const log = logging.createModuleLogger("y-webrtc");
 
@@ -46,7 +46,9 @@ const checkIsSynced = (room: Room) => {
   }
 };
 
-const readMessage = (room: Room, buf: Uint8Array, syncedCallback: Function): encoding.Encoder | null => {
+type callBack = () => void;
+
+const readMessage = (room: Room, buf: Uint8Array, syncedCallback: callBack): encoding.Encoder | null => {
   const decoder = decoding.createDecoder(buf);
   const encoder = encoding.createEncoder();
   const messageType = decoding.readVarUint(decoder);
@@ -176,7 +178,9 @@ const sendWebrtcConn = (webrtcConn: WebrtcConn, encoder: encoding.Encoder) => {
   );
   try {
     webrtcConn.peer.send(encoding.toUint8Array(encoder));
-  } catch (e) { }
+  } catch (e) {
+    console.log("cannot send message to peer", e);
+  }
 };
 
 const broadcastWebrtcConn = (room: Room, m: Uint8Array) => {
@@ -279,12 +283,12 @@ export class WebrtcConn {
 const broadcastBcMessage = (room: Room, m: Uint8Array) =>
   cryptoutils
     .encrypt(m, room.key)
-    .then((data) => room.mux(() => bc.publish(room.name, data)));
+    .then((data) => room.mux(() => bc.publish(room.name, data), undefined));
 
-const broadcastRoomMessage = (room: Room, m: Uint8Array) => {
-  console.log("broadcastRoomMessage room:", room);
+const broadcastRoomMessage = async (room: Room, m: Uint8Array) => {
+  // console.log("broadcastRoomMessage room:", room);
   if (room.bcconnected) {
-    broadcastBcMessage(room, m);
+    await broadcastBcMessage(room, m);
   }
   broadcastWebrtcConn(room, m);
 };
@@ -304,14 +308,14 @@ const announceSignalingInfo = (room: Room) => {
   });
 };
 
-const broadcastBcPeerId = (room: Room) => {
+const broadcastBcPeerId = async (room: Room) => {
   if (room.provider.filterBcConns) {
     // broadcast peerId via broadcastchannel
     const encoderPeerIdBc = encoding.createEncoder();
     encoding.writeVarUint(encoderPeerIdBc, messageBcPeerId);
     encoding.writeUint8(encoderPeerIdBc, 1);
     encoding.writeVarString(encoderPeerIdBc, room.peerId);
-    broadcastBcMessage(room, encoding.toUint8Array(encoderPeerIdBc));
+    await broadcastBcMessage(room, encoding.toUint8Array(encoderPeerIdBc));
   }
 };
 
@@ -321,7 +325,7 @@ export class Room {
   synced: boolean;
   webrtcConns: Map<string, WebrtcConn>;
   bcConns: Set<string>;
-  mux: Function;
+  mux: (a: callBack, b: callBack | undefined) => void;
   bcconnected: boolean;
 
 
@@ -338,16 +342,16 @@ export class Room {
     this.bcConns = new Set<string>();
     this.mux = createMutex();
     this.bcconnected = false;
-    this._bcSubscriber = this._bcSubscriber.bind(this);
-    process.on("exit", this._beforeUnloadHandler);
+    this.bcSubscriber = this.bcSubscriber.bind(this);
+    process.on("exit", this.beforeUnloadHandler);
   }
 
   connect() {
-    this.doc.on("update", this._docUpdateHandler.bind(this));
-    this.awareness.on("update", this._awarenessUpdateHandler.bind(this));
+    this.doc.on("update", this.docUpdateHandler.bind(this));
+    this.awareness.on("update", this.awarenessUpdateHandler.bind(this));
     // signal through all available signaling connections
     announceSignalingInfo(this);
-    bc.subscribe(this.name, this._bcSubscriber);
+    bc.subscribe(this.name, this.bcSubscriber);
     this.bcconnected = true;
     // broadcast peerId via broadcastchannel
     broadcastBcPeerId(this);
@@ -396,28 +400,28 @@ export class Room {
     encoding.writeVarString(encoderPeerIdBc, this.peerId);
     broadcastBcMessage(this, encoding.toUint8Array(encoderPeerIdBc));
 
-    bc.unsubscribe(this.name, this._bcSubscriber);
+    bc.unsubscribe(this.name, this.bcSubscriber);
     this.bcconnected = false;
-    this.doc.off("update", this._docUpdateHandler.bind(this));
-    this.awareness.off("update", this._awarenessUpdateHandler.bind(this));
+    this.doc.off("update", this.docUpdateHandler.bind(this));
+    this.awareness.off("update", this.awarenessUpdateHandler.bind(this));
     this.webrtcConns.forEach((conn) => conn.destroy());
   }
 
   destroy() {
     this.disconnect();
-    process.off("exit", this._beforeUnloadHandler);
+    process.off("exit", this.beforeUnloadHandler);
   }
 
-  private _bcSubscriber(data: ArrayBuffer): any {
+  private bcSubscriber(data: ArrayBuffer): any {
     cryptoutils.decrypt(new Uint8Array(data), this.key).then((m: any) =>
       this.mux(() => {
         const reply = readMessage(this, m, () => {
-          console.log("read message _bcSubscriber");
+          // console.log("read message _bcSubscriber");
         });
         if (reply) {
           broadcastBcMessage(this, encoding.toUint8Array(reply));
         }
-      })
+      }, undefined)
     );
   }
 
@@ -425,8 +429,8 @@ export class Room {
   * Listens to Yjs updates and sends them to remote peers
   *
   */
-  private _docUpdateHandler(update: Uint8Array, _origin: any) {
-    console.log("_docUpdateHandler origin", _origin, this);
+  private docUpdateHandler(update: Uint8Array, _origin: any) {
+    // console.log("_docUpdateHandler origin", _origin, this);
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
     syncProtocol.writeUpdate(encoder, update);
@@ -437,8 +441,8 @@ export class Room {
    * Listens to Awareness updates and sends them to remote peers
    *
    */
-  private _awarenessUpdateHandler = ({ added, updated, removed }: { added: any; updated: any; removed: any; }, _origin: any) => {
-    console.log("_awarenessUpdateHandler origin", _origin, this);
+  private awarenessUpdateHandler = ({ added, updated, removed }: { added: any; updated: any; removed: any; }, _origin: any) => {
+    // console.log("_awarenessUpdateHandler origin", _origin, this);
     const changedClients = added.concat(updated).concat(removed);
     const encoderAwareness = encoding.createEncoder();
     encoding.writeVarUint(encoderAwareness, messageAwareness);
@@ -449,7 +453,7 @@ export class Room {
     broadcastRoomMessage(this, encoding.toUint8Array(encoderAwareness));
   };
 
-  private _beforeUnloadHandler() {
+  private beforeUnloadHandler() {
     awarenessProtocol.removeAwarenessStates(
       this.awareness,
       [this.doc.clientID],
@@ -505,7 +509,7 @@ export class SignalingConn extends ws.WebsocketClient {
     this.on("message", (m: any) => {
       switch (m.type) {
         case "publish": {
-          console.log("on message publish", JSON.stringify(m));
+          // console.log("on message publish", JSON.stringify(m));
           const roomName = m.topic;
           const room = rooms.get(roomName);
           if (!room || typeof roomName !== "string") {
@@ -592,7 +596,7 @@ export class WebrtcProvider extends Observable<string> {
   filterBcConns: boolean;
   shouldConnect: boolean;
   signalingConns: SignalingConn[];
-  peerOpts: {};
+  peerOpts: Peer.Options;
   // key: PromiseLike<CryptoKey | null>;
 
   room: Room | null;
@@ -600,7 +604,7 @@ export class WebrtcProvider extends Observable<string> {
   constructor(
     public roomName: string,
     public doc: Y.Doc,
-    public _signalingUrls: string[] = [
+    public signalingUrls: string[] = [
       "wss://signaling.yjs.dev",
       "wss://y-webrtc-signaling-eu.herokuapp.com",
       "wss://y-webrtc-signaling-us.herokuapp.com",
@@ -632,7 +636,7 @@ export class WebrtcProvider extends Observable<string> {
 
   connect() {
     this.shouldConnect = true;
-    this._signalingUrls.forEach((url) => {
+    this.signalingUrls.forEach((url) => {
       const signalingConn = map.setIfUndefined(
         signalingConns,
         url,

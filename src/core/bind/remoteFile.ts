@@ -46,7 +46,7 @@ export class RemoteFile extends Y.Map<any> implements YFile {
     }
 
     get selections(): Y.Array<PeerSelection> {
-        let selections = this.get(YjsConstants.selectionsKey);
+        const selections = this.get(YjsConstants.selectionsKey);
         if (selections === undefined) {
             console.warn("Proxy: Selections are undefined");
         }
@@ -101,7 +101,7 @@ export class RemoteFileWrapper implements YFile {
     }
 
     get selections(): Y.Array<PeerSelection> {
-        let selections = this.delegate.get(YjsConstants.selectionsKey);
+        const selections = this.delegate.get(YjsConstants.selectionsKey);
         if (selections === undefined) {
             console.warn("Proxy: Selections are undefined");
         }

@@ -25,13 +25,13 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
                 private currentUsername: string,
                 public yFile: YFile) {
         super();
-        let yChangeObserver = async (event: Y.YTextEvent, transaction: Y.Transaction) => {
+        const yChangeObserver = async (event: Y.YTextEvent, transaction: Y.Transaction) => {
             if (transaction.origin === this.currentUsername) {
                 return;
             }
             await this.onRemoteTextChanged(event);
         };
-        let saveObserver = (event: any, transaction: Y.Transaction) => {
+        const saveObserver = (event: any, transaction: Y.Transaction) => {
             if (transaction.origin === this.currentUsername) {
                 return;
             }
@@ -42,7 +42,7 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
 
         if (this.yFile.text.length > 0) {
             this.currentText = this.yFile.text.toString();
-            let text = this.currentText;
+            const text = this.currentText;
             console.log("YDocumentBinder: constructor- text:", text, "length:", text.length);
             this.notify(async (listener) => {
                 await listener.onRemoteInitText(text);
@@ -56,20 +56,20 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
     }
 
     private async onRemoteTextChanged(event: Y.YTextEvent) {
-        let changes: TextChange[] = [];
+        const changes: TextChange[] = [];
         let position = 0;
-        for (let delta of event.changes.delta) {
+        for (const delta of event.changes.delta) {
             if (delta.retain) {
                 position += delta.retain;
             } else if (delta.delete) {
-                let textDelete = new TextChange(TextChangeType.DELETE,
+                const textDelete = new TextChange(TextChangeType.DELETE,
                     util.indexToLineAndCharacter(this.currentText, position),
                     util.indexToLineAndCharacter(this.currentText, position + delta.delete),
                     "");
                 changes.push(textDelete);
                 this.applyChange(textDelete);
             } else if (delta.insert) {
-                let textInsert = new TextChange(TextChangeType.INSERT,
+                const textInsert = new TextChange(TextChangeType.INSERT,
                     util.indexToLineAndCharacter(this.currentText, position),
                     util.indexToLineAndCharacter(this.currentText, position),
                     delta.insert as string);
@@ -97,10 +97,10 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
     }
 
     private applyChange(change: TextChange) {
-        let startIndex = util.lineAndCharacterToIndex(this.currentText, change.start);
-        let endIndex = util.lineAndCharacterToIndex(this.currentText, change.end);
-        let start = this.currentText.slice(0, startIndex);
-        let end = this.currentText.slice(endIndex);
+        const startIndex = util.lineAndCharacterToIndex(this.currentText, change.start);
+        const endIndex = util.lineAndCharacterToIndex(this.currentText, change.end);
+        const start = this.currentText.slice(0, startIndex);
+        const end = this.currentText.slice(endIndex);
         // console.log("YDocumentBinder: applyChange- change:", change.text,
         //     "start:", start, "end:", end, "startIndex:",
         //     startIndex, "endIndex:", endIndex, "length:", this.currentText.length);
@@ -109,8 +109,8 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
 
     async sendChangeToRemote(change: TextChange): Promise<void> {
         console.log("YDocumentBinder: sendChangeToRemote- change:", change);
-        let startIndex = util.lineAndCharacterToIndex(this.currentText, change.start);
-        let endIndex = util.lineAndCharacterToIndex(this.currentText, change.end);
+        const startIndex = util.lineAndCharacterToIndex(this.currentText, change.start);
+        const endIndex = util.lineAndCharacterToIndex(this.currentText, change.end);
         this.sendChangeInTransaction(change, startIndex, endIndex);
         this.applyChange(change);
     }

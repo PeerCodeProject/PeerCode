@@ -12,9 +12,9 @@
 				"${workspaceFolder}/dist/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}",
-			"env": {
-				"LOG":"*"
-			}
+			// "env": {
+			// 	"LOG":"*"
+			// }
 		}
 	]
 }

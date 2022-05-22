@@ -23,7 +23,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     private setupObservers() {
         this.peers.set(this.currentPeer, this.currentFiles);
-        for (let peer of this.peers.keys()) {
+        for (const peer of this.peers.keys()) {
             this.addPeer(peer, this.peers.get(peer)!);
         }
         this.peers.observe(this.peerEventListener.bind(this));
@@ -58,7 +58,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
             return;
         }
 
-        for (let fileName of files.keys()) {
+        for (const fileName of files.keys()) {
             this.addPeerFile(peer, fileName, files.get(fileName)!);
         }
         this.addObserverForFileList(peer, files);
@@ -67,7 +67,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
     }
 
     addObserverForFileList(peer: string, files: Y.Map<Y.Map<any>>) {
-        let fileChangeListener = (event: Y.YMapEvent<Y.Map<any>>, transaction: Y.Transaction) => {
+        const fileChangeListener = (event: Y.YMapEvent<Y.Map<any>>, transaction: Y.Transaction) => {
             if (transaction.origin === this.currentPeer) {
                 return;
             }
@@ -87,7 +87,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     addPeerFile(peer: string, filename: string, file: Y.Map<any>) {
         console.debug("Adding Peer file " + filename + ", From " + peer);
-        let remoteFile = new RemoteFileWrapper(file);
+        const remoteFile = new RemoteFileWrapper(file);
         if (!this.editorChannelsForPeer.has(peer)) {
             this.editorChannelsForPeer.set(peer, new Map<string, YEditorChannel>());
         }
@@ -110,7 +110,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     sendLocalFile(filename: string): EditorChannel {
         console.debug("sendLocalFile file:" + filename + ", peer:");
-        let remoteFile = new RemoteFile(this.currentPeer, filename);
+        const remoteFile = new RemoteFile(this.currentPeer, filename);
         this.doc.transact(() => {
             this.currentFiles.set(filename, remoteFile);
         }, this.currentPeer);
@@ -119,7 +119,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
             this.editorChannelsForPeer.set(this.currentPeer, new Map<string, YEditorChannel>());
         }
         console.log("sendLocalFile creating new YEditorBinder for:" + filename, "curr peer:" + this.currentPeer);
-        let sync = new YEditorChannel(this.doc, this.currentPeer, remoteFile);
+        const sync = new YEditorChannel(this.doc, this.currentPeer, remoteFile);
 
         this.editorChannelsForPeer.get(this.currentPeer)!.set(filename, sync);
         return sync;

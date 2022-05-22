@@ -25,13 +25,13 @@ export default class DocumentBinding implements DocumentChannelListener {
 
     async onRemoteInitText(text: string): Promise<void> {
         console.log("onRemoteInitText - text:" + text);
-        let textEdit = new vscode.TextEdit(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)), text);
+        const textEdit = new vscode.TextEdit(new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)), text);
         await this.applyWorkspaceEdits(this.document, [textEdit]);
     }
 
     async onRemoteTextChanges(changes: TextChange[]): Promise<void> {
         console.log("onRemoteTextChanges- changes length:" + changes.length);
-        let textEdits = changes.map(change => {
+        const textEdits = changes.map(change => {
             return new vscode.TextEdit(createRange(change.start, change.end), change.text);
         });
         await this.applyWorkspaceEdits(this.document, textEdits);
@@ -60,7 +60,7 @@ export default class DocumentBinding implements DocumentChannelListener {
 
     private async update(edit: vscode.WorkspaceEdit) {
         this.mutexLock = true;
-        let res = await vscode.workspace.applyEdit(edit);
+        const res = await vscode.workspace.applyEdit(edit);
         this.mutexLock = false;
         return res;
     }
@@ -82,7 +82,7 @@ export default class DocumentBinding implements DocumentChannelListener {
     }
 
     async applyWorkspaceEdits(document: vscode.TextDocument, edits: vscode.TextEdit[]) {
-        let workspaceEdit = new vscode.WorkspaceEdit();
+        const workspaceEdit = new vscode.WorkspaceEdit();
         workspaceEdit.set(document.uri, edits);
         await this.tryApplyChanges(workspaceEdit);
     }

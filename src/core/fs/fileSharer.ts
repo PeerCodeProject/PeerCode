@@ -8,9 +8,9 @@ export class FileSharer {
     }
 
     async shareWorkspace(sess: Session) {
-        let files = await getAllFiles(this.workspacePath!);
+        const files = await getAllFiles(this.workspacePath!);
         console.log("files to Share: " + files);
-        for (let file of files) {
+        for (const file of files) {
             sess.shareLocalFile(file);
         }
     }

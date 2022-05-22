@@ -21,7 +21,7 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
 
     constructor(private doc: Y.Doc, private currentUsername: string, public yFile: YFile) {
         super();
-        let selectionObserver = (event: Y.YArrayEvent<PeerSelection>, transaction: Y.Transaction) => {
+        const selectionObserver = (event: Y.YArrayEvent<PeerSelection>, transaction: Y.Transaction) => {
             if (transaction.origin === this.currentUsername) {
                 return;
             }
@@ -40,14 +40,14 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
     }
 
     private onSelectionChanged(event: Y.YArrayEvent<PeerSelection>) {
-        let changedPeers = this.getChangedPeers(event);
+        const changedPeers = this.getChangedPeers(event);
         this.syncChangedPeers(changedPeers, event);
     }
 
     private syncChangedPeers(changedPeers: Set<string>, event: Y.YArrayEvent<PeerSelection>) {
-        for (let changedPeer of changedPeers) {
+        for (const changedPeer of changedPeers) {
             console.log("changed SelectionsForPeer: " + changedPeer + ", uri:" + this.yFile.filename);
-            let peerSelections = this.getSelectionsForPeer(event.target, changedPeer);
+            const peerSelections = this.getSelectionsForPeer(event.target, changedPeer);
             this.notify(async (listener: EditorChannelListener) => {
                 listener.onSelectionsChangedForPeer(changedPeer, peerSelections, this.yFile.filename);
             });
@@ -55,12 +55,12 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
     }
 
     private getChangedPeers(event: Y.YArrayEvent<PeerSelection>) {
-        let changedPeers = new Set<string>();
-        for (let addition of event.changes.added) {
+        const changedPeers = new Set<string>();
+        for (const addition of event.changes.added) {
             this.extractPeerFromChange(addition, changedPeers);
         }
 
-        for (let deletion of event.changes.deleted) {
+        for (const deletion of event.changes.deleted) {
             this.extractPeerFromChange(deletion, changedPeers);
         }
         return changedPeers;
@@ -71,8 +71,8 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
     }
 
     private extractPeerFromChange(item: Y.Item, changedPeers: Set<string>) {
-        for (let selection of item.content.getContent()) {
-            let peerSelection = selection as PeerSelection;
+        for (const selection of item.content.getContent()) {
+            const peerSelection = selection as PeerSelection;
             changedPeers.add(peerSelection.peer);
         }
     }
@@ -86,7 +86,7 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
                             this.yFile.selections.delete(i);
                         }
                     }
-                    for (let selection of selections) {
+                    for (const selection of selections) {
                         this.yFile.selections.push([{peer: this.currentUsername, selection: selection}]);
                     }
                     resolve();

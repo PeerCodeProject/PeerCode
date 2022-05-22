@@ -29,10 +29,10 @@ export default class EditorBinding implements EditorChannelListener {
 
     onSelectionsChangedForPeer(peername: string, selections: Selection[], fileKey: string): Promise<void> {
         console.log(this.constructor.name + ": onSelectionsChangedForPeer- peerId:" + peername + ", selections size:" + selections.length);
-        let selectionRanges: vscode.Range[] = [];
-        let cursorRanges: vscode.Range[] = [];
+        const selectionRanges: vscode.Range[] = [];
+        const cursorRanges: vscode.Range[] = [];
 
-        for (let selection of selections) {
+        for (const selection of selections) {
             if (selection.isCursor) {
                 cursorRanges.push(
                     new vscode.Range(
@@ -45,7 +45,7 @@ export default class EditorBinding implements EditorChannelListener {
                         getVSCodePosition(selection.end)));
             }
         }
-        for (let editor of vscode.window.visibleTextEditors) {
+        for (const editor of vscode.window.visibleTextEditors) {
             if (getFileKeyFromUri(editor.document.uri) === fileKey) {
                 editor.setDecorations(selectionDecoration, selectionRanges);
                 editor.setDecorations(cursorDecoration, cursorRanges);
@@ -57,9 +57,9 @@ export default class EditorBinding implements EditorChannelListener {
 
     updateSelections(selections: readonly vscode.Selection[]) {
 
-        let remoteSelections: Selection[] = [];
+        const remoteSelections: Selection[] = [];
         for (let i = 0; i < selections.length; i++) {
-            let selection = selections[i];
+            const selection = selections[i];
             remoteSelections.push(new Selection(i + "",
                 getPosition(selection.start),
                 getPosition(selection.end),

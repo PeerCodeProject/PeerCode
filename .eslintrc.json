@@ -3,20 +3,64 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 6,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "tsconfig.json"
     },
     "plugins": [
         "@typescript-eslint"
     ],
     "rules": {
-        "quotes":"warn",
-        "@typescript-eslint/naming-convention": "warn",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            { 
+                "selector": "default",
+                "format": [
+                    "camelCase",
+                    "PascalCase"
+                ]
+            },
+            { 
+                "selector": "variable",
+                "modifiers": [
+                    "const"
+                ],
+                "format": [
+                    "camelCase",
+                    "PascalCase",
+                    "UPPER_CASE"
+                ]
+            },
+            { 
+                "selector": "classProperty",
+                "modifiers": [
+                    "private"
+                ],
+                "format": [
+                    "camelCase",
+                    "PascalCase"
+                ],
+                "leadingUnderscore": "allow"
+            }
+        ],
+        "@typescript-eslint/no-floating-promises": "warn",
+        "@typescript-eslint/no-inferrable-types": "off", 
+        "@typescript-eslint/no-unused-vars": [ 
+            "warn",
+            { 
+                "args": "none"
+            }
+        ],
         "@typescript-eslint/semi": "warn",
-        "curly": "warn",
-        "eqeqeq": "warn",
+        "curly": "warn", 
+        "eqeqeq": "warn", 
         "no-throw-literal": "warn",
         "semi": "off"
     },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
     "ignorePatterns": [
         "out",
         "dist",

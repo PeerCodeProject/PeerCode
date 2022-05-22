@@ -1,5 +1,3 @@
-/* eslint-env browser */
-
 import * as encoding from "lib0/encoding";
 import * as decoding from "lib0/decoding";
 import * as promise from "lib0/promise";

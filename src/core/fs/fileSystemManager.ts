@@ -14,7 +14,7 @@ export class FileSystemManager {
 
     workspacePath: string;
     constructor() {
-        let wspath = getWorkspacePath();
+        const wspath = getWorkspacePath();
         if (wspath) {
             this.workspacePath = wspath;
         } else {
@@ -57,7 +57,7 @@ export function makeFileSync(filename: string) {
 
 export function getWorkspacePath(): string | null {
     if (vscode.workspace.workspaceFolders) {
-        for (let folder of vscode.workspace.workspaceFolders) {
+        for (const folder of vscode.workspace.workspaceFolders) {
             return folder.uri.fsPath;
         }
     }
@@ -71,7 +71,7 @@ export async function getAllFiles(wsPath: string): Promise<vscode.Uri[]> {
 
 export function getFileKeyFromUri(uri: vscode.Uri) {
     let url = uri.fsPath;
-    let wspath = getWorkspacePath();
+    const wspath = getWorkspacePath();
     if (wspath!) {
         url = uri.fsPath.split(wspath)[1];
     }

@@ -20,7 +20,7 @@ export class YWebSocketConnector extends YjsConnector {
 
     async connect(username: string, room: string): Promise<IConnection> {
         console.debug("connecting via websocket to " + this.wsServerUrl + " room: " + room + " username: " + username);
-        let ydoc = new Y.Doc();
+        const ydoc = new Y.Doc();
         const provider = new WebsocketProvider(this.wsServerUrl, room, ydoc,
             {
                 WebSocketPolyfill: require('ws')  // eslint-disable-line
@@ -35,7 +35,7 @@ export class YWebSocketConnector extends YjsConnector {
     private awaitConnection(provider: WebsocketProvider) {
         return new Promise<void>((resolve, _reject) => {
             provider.on("status", (event: any) => {
-                let status = event.status;
+                const status = event.status;
                 console.debug("status on ws connect:" + status);
                 if (status === "connected") {
                     resolve();
@@ -54,7 +54,7 @@ export class YWebRTCConnector extends YjsConnector {
 
     async connect(username: string, room: string): Promise<IConnection> {
         console.debug("connecting via webrtc to " + this.signalingServerUrl + " room: " + room + " username: " + username);
-        let ydoc = new Y.Doc();
+        const ydoc = new Y.Doc();
         const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl]);
         await this.awaitConnection(provider);
         return new YjsConnection(new RTCProvider(provider), ydoc, username, room);

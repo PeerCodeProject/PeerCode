@@ -1,10 +1,8 @@
-import { getStroke } from "https://esm.sh/perfect-freehand@1";
-import * as Y from "https://esm.sh/yjs@13";
-import { WebrtcProvider } from "https://esm.sh/y-webrtc@10";
-// import { getStroke } from "perfect-freehand";
-// import * as Y from "yjs";
-// import { WebrtcProvider } from "y-webrtc";
+/* eslint-env browser */
 
+import { getStroke } from "https://esm.sh/perfect-freehand@1.0.16";
+import * as Y from "https://esm.sh/yjs@13.5.35";
+import { WebrtcProvider } from "https://esm.sh/y-webrtc@10.2.3";
 
 console.log(window.username);
 console.log(window.roomname);
@@ -14,7 +12,6 @@ const ydoc = new Y.Doc();
 const provider = new WebrtcProvider(window.roomname, ydoc, {
   signaling: [window.serverUrl],
 });
-
 
 const svg = document.querySelector("svg");
 
@@ -32,11 +29,10 @@ const colors = [
 ];
 
 document.getElementById("favcolor").addEventListener("change", (e) => {
-   choosenColor = e.target.value;
- });
+  choosenColor = e.target.value;
+});
 
 const awareness = provider.awareness;
-
 
 var choosenColor = oneOf(colors).color;
 
@@ -47,7 +43,6 @@ awareness.setLocalStateField("user", {
 awareness.on("change", (event) => {
   svg.querySelectorAll("circle").forEach((circle) => circle.remove());
   awareness.getStates().forEach((state, clientID) => {
-
     if (clientID === awareness.clientID) {
       return;
     }
@@ -162,17 +157,13 @@ const clearButton = document.getElementById("clear-canvas");
 
 clearButton.addEventListener("click", () => {
   ystrokes.clear();
-  
- svg.querySelectorAll("path").forEach((circle) => circle.remove());
 
+  svg.querySelectorAll("path").forEach((circle) => circle.remove());
 });
-// @ts-ignore
+
 window.Y = Y;
-// @ts-ignore
 window.svg = svg;
-// @ts-ignore
 window.ystrokes = ystrokes;
-// @ts-ignore
 window.ydoc = ydoc;
 
 /**

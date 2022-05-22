@@ -17,10 +17,10 @@ export class YjsConnection implements IConnection {
     }
 
     private createNewSession(): Session {
-        let peerManager = new PeerManager();
-        let fileSystemManager = FileSystemManager.getInstace();
-        let yjsBinder = new YjsBinder(this.doc, this.username, peerManager);
-        let fileShareManager = new FileShareManager(yjsBinder, fileSystemManager);
+        const peerManager = new PeerManager();
+        const fileSystemManager = FileSystemManager.getInstace();
+        const yjsBinder = new YjsBinder(this.doc, this.username, peerManager);
+        const fileShareManager = new FileShareManager(yjsBinder, fileSystemManager);
         yjsBinder.setRemoteFileListener(fileShareManager);
         return new Session(this.room, this.username, peerManager, fileShareManager);
     }

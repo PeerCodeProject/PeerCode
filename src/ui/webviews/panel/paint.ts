@@ -1,25 +1,23 @@
 import * as vscode from "vscode";
 import {getUri} from "../../../utils";
-import {config} from "../../../config";
+import {IConfig} from "../../../config";
 
 export class DrawingPanel {
     public static currentPanel: DrawingPanel | undefined;
-    private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri,
-                        private roomname: string, private username: string) {
-        this._panel = panel;
-        this._panel.onDidDispose(this.dispose, null, this._disposables);
-        this._panel.webview.html = this._getWebviewContent(
-            this._panel.webview,
+    private constructor(private readonly  panel: vscode.WebviewPanel, extensionUri: vscode.Uri,
+                        private readonly config: IConfig, private roomname: string, private username: string) {
+        this.panel.onDidDispose(this.dispose, null, this._disposables);
+        this.panel.webview.html = this.getWebviewContent(
+            this.panel.webview,
             extensionUri
         );
     }
 
-    public static render(extensionUri: vscode.Uri, roomname: string, username: string) {
+    public static render(extensionUri: vscode.Uri, config: IConfig, roomname: string, username: string) {
         if (DrawingPanel.currentPanel) {
-            DrawingPanel.currentPanel._panel.reveal(vscode.ViewColumn.One);
+            DrawingPanel.currentPanel.panel.reveal(vscode.ViewColumn.One);
         } else {
             const panel = vscode.window.createWebviewPanel(
                 "super paint",
@@ -31,14 +29,14 @@ export class DrawingPanel {
                 }
             );
 
-            DrawingPanel.currentPanel = new DrawingPanel(panel, extensionUri, roomname, username);
+            DrawingPanel.currentPanel = new DrawingPanel(panel, extensionUri, config, roomname, username);
         }
     }
 
     public dispose() {
         DrawingPanel.currentPanel = undefined;
 
-        this._panel.dispose();
+        this.panel.dispose();
 
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
@@ -48,7 +46,7 @@ export class DrawingPanel {
         }
     }
 
-    private _getWebviewContent(
+    private getWebviewContent(
         webview: vscode.Webview,
         extensionUri: vscode.Uri
     ) {
@@ -72,7 +70,6 @@ export class DrawingPanel {
             "dist",
             "toolkit.js", // A toolkit.min.js file is also available
         ]);
-        const self = this;
         return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
@@ -82,9 +79,9 @@ export class DrawingPanel {
             <script type="module" src="${toolkitUri}"></script>
             <script type="module" src="${scriptUri}"></script>
             <script> 
-                window.username = "${self.username}";
-                window.roomname = "${self.roomname}";
-                window.serverUrl = "${config.webrtcServerURL}";
+                window.username = "${this.username}";
+                window.roomname = "${this.roomname}";
+                window.serverUrl = "${this.config.getParamSting("webrtcServerURL")}";
             </script>
             <link href="${styleUri}" rel="stylesheet" type="text/css" />
             <link href="${vscodeStyleUri}" rel="stylesheet" type="text/css" />

@@ -9,7 +9,7 @@ export function initGlobal() {
 }
 
 export async function input(inputter: () => Promise<string | undefined | null>) {
-    let result = await inputter();
+    const result = await inputter();
     if (!result) {
         throw new Error("Input Error");
     }

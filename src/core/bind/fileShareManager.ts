@@ -56,36 +56,36 @@ export default class FileShareManager implements IShareLocalToRemote, RemoteFile
 
     async shareFile(uri: vscode.Uri) {
         console.log("FileShareManager - shareFile:" + uri.fsPath);
-        let fileKey = getFileKeyFromUri(uri);
+        const fileKey = getFileKeyFromUri(uri);
         let sharedFile = this.fileStore.getSharedFile(fileKey);
         if (sharedFile) {
             console.log("shareFile: shared file is already exists for key: " + fileKey);
             return;
         }
 
-        let editorChannel = this.connBinder.sendLocalFile(fileKey);
+        const editorChannel = this.connBinder.sendLocalFile(fileKey);
         sharedFile = await this.createAndSaveSharedFile(fileKey, uri, editorChannel);
         this.documentManager.initializeTextToRemote(sharedFile.textDocument);
     }
 
 
     private async createAndSaveSharedFile(fileKey: string, uri: vscode.Uri, editorChannel: EditorChannel) {
-        let document = await this.editorManager.openDocument(uri);
-        let binding = new DocumentBinding(document, editorChannel.getDocumentChannel());
-        let editorBinding = new EditorBinding(editorChannel);
-        let sharedFile = new SharedPeerFile(fileKey, document, binding, editorChannel, editorBinding);
+        const document = await this.editorManager.openDocument(uri);
+        const binding = new DocumentBinding(document, editorChannel.getDocumentChannel());
+        const editorBinding = new EditorBinding(editorChannel);
+        const sharedFile = new SharedPeerFile(fileKey, document, binding, editorChannel, editorBinding);
         this.fileStore.saveFile(sharedFile);
         return sharedFile;
     }
 
     async onAddRemoteFile(fileKey: string, editorChannel: EditorChannel): Promise<void> {
         console.log("FileShareManager onAddRemoteFile: onAddRemoteFile :" + fileKey);
-        let localUri = this.fileSystem.addFile(fileKey);
+        const localUri = this.fileSystem.addFile(fileKey);
         if (!localUri) {
             console.warn("FileShareManager onAddRemoteFile: localUri is already exist, skipping....");
             return;
         }
-        let sharedFile = this.fileStore.getSharedFile(fileKey);
+        const sharedFile = this.fileStore.getSharedFile(fileKey);
         if (sharedFile) {
             console.warn("FileShareManager onAddRemoteFile: shared file is already exists for key: " + fileKey);
             return;

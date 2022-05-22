@@ -24,7 +24,7 @@ export class DocumentManager implements IDocumentManager {
         }
         console.log("Handling change event: " + event.contentChanges.length, ", doc name:" + event.document.fileName);
 
-        let sharedFile = this.fileStore.getSharedFileByUri(event.document.uri);
+        const sharedFile = this.fileStore.getSharedFileByUri(event.document.uri);
         if (!sharedFile) {
             console.error("onChangeTextDocument: No shared file found for document: " + event.document.uri);
             return;
@@ -34,7 +34,7 @@ export class DocumentManager implements IDocumentManager {
 
     private onSaveDocument(event: vscode.TextDocumentWillSaveEvent) {
         console.log("Handling on save document:" + event.document.fileName);
-        let sharedFile = this.fileStore.getSharedFileByUri(event.document.uri);
+        const sharedFile = this.fileStore.getSharedFileByUri(event.document.uri);
         if (!sharedFile) {
             console.error("onSaveDocument: No shared file found for document: " + event.document.uri);
             return;
