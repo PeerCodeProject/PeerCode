@@ -5,8 +5,10 @@ import { FileSharer } from "../core/fs/fileSharer";
 import { BaseObservable } from "../core/observable";
 import { input } from "../utils";
 import { Session, SessionListener } from "./session";
+import { DrawingPanel } from "../ui/webviews/panel/paint";
 
 export class SessionManager extends BaseObservable<SessionListener> {
+
 
     private sessions: Session[] = [];
 
@@ -46,6 +48,9 @@ export class SessionManager extends BaseObservable<SessionListener> {
         await this.createSession();
     }
 
+    renderPaint(extensionUri: vscode.Uri, session: Session) {
+        DrawingPanel.render(extensionUri,session.getRoomName(),session.getUsername());
+    }
 }
 
 

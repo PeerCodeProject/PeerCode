@@ -3,6 +3,7 @@ import * as Y from "yjs";
 
 import { WebrtcProvider } from "../../y-webrtc/y-webrtc";
 import { IConnection, IConnector } from "../conn";
+import { RTCProvider, SocketProvider } from "./provider";
 import { YjsConnection } from "./YJSConnection";
 
 
@@ -27,7 +28,7 @@ export class YWebSocketConnector extends YjsConnector {
         await this.awaitConnection(provider);
         console.debug("Connected to:" + room);
 
-        return new YjsConnection(ydoc, username, room);
+        return new YjsConnection(new SocketProvider(provider), ydoc, username, room);
     }
 
 
@@ -56,9 +57,10 @@ export class YWebRTCConnector extends YjsConnector {
         let ydoc = new Y.Doc();
         const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl]);
         await this.awaitConnection(provider);
-        return new YjsConnection(ydoc, username, room);
+        return new YjsConnection(new RTCProvider(provider), ydoc, username, room);
 
     }
+
     awaitConnection(provider: WebrtcProvider) {
         return new Promise<void>((resolve, _reject) => {
             provider.on("synced", (event: any) => {

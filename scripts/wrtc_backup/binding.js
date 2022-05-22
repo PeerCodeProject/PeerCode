@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:68ac047ea2d1967141c294d2c9cc7250d620dee968cef925a49d9ce68addd5c4
-size 352
+"use strict";
+const os = require("os");
+
+function isWindows() {
+    return os.platform() === "win32";
+}
+
+try {
+  if (isWindows()) {
+    module.exports = require("../build/Debug/win/wrtc.node");
+  } else {
+    module.exports = require("../build/Debug/linux/wrtc.node");
+
+  }
+} catch (error) {
+  module.exports = require("../build/Release/wrtc.node");
+}

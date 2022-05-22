@@ -13,6 +13,7 @@ export interface SessionListener {
 export class Session {
 
     constructor(private roomname: string,
+        private username: string,
         private peerManager: PeerManager,
         private shareLocalToRemote: IShareLocalToRemote) {
 
@@ -32,5 +33,8 @@ export class Session {
 
     public shareLocalFile(file: vscode.Uri) {
         return this.shareLocalToRemote.shareFile(file);
+    }
+    public getUsername(): string {
+        return this.username;
     }
 }

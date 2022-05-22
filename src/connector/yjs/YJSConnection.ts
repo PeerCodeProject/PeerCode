@@ -6,11 +6,13 @@ import { FileSystemManager } from "../../core/fs/fileSystemManager";
 import { PeerManager } from "../../peer/peer";
 import { Session } from "../../session/session";
 import { IConnection } from "../conn";
+import { YjsProvider } from "./provider";
 
 export class YjsConnection implements IConnection {
 
     private readonly session: Session;
-    constructor(private doc: Doc, private username: string, private room: string) {
+    constructor(private provider: YjsProvider, private doc: Doc,
+        private username: string, private room: string) {
         this.session = this.createNewSession();
     }
 
@@ -20,7 +22,7 @@ export class YjsConnection implements IConnection {
         let yjsBinder = new YjsBinder(this.doc, this.username, peerManager);
         let fileShareManager = new FileShareManager(yjsBinder, fileSystemManager);
         yjsBinder.setRemoteFileListener(fileShareManager);
-        return new Session(this.room, peerManager, fileShareManager);
+        return new Session(this.room, this.username, peerManager, fileShareManager);
     }
 
     getSession(): Session {

@@ -1,3 +1,5 @@
+import { Uri, Webview } from "vscode";
+
 const globalTemp: any = global;
 
 export function initGlobal() {
@@ -16,4 +18,12 @@ export async function input(inputter: () => Promise<string | undefined | null>) 
 
 export function randomInteger(min:number, max:number) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function getUri(
+    webview: Webview,
+    extensionUri: Uri,
+    pathList: string[]
+) {
+    return webview.asWebviewUri(Uri.joinPath(extensionUri, ...pathList));
 }

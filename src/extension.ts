@@ -7,6 +7,7 @@ import { getWorkspacePath } from "./core/fs/fileSystemManager";
 import { SessionManager } from "./session/sessionManager";
 import { PeerCodeSessionTreeDataProvider } from "./ui/tree/peerCodeTreeDataProvider";
 import { initGlobal } from "./utils";
+import { SessionTreeNode } from "./ui/tree/treeNodes";
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -42,6 +43,10 @@ function registerCommands(context: vscode.ExtensionContext, sessionManager: Sess
 				console.log("Error in JoinSession", err);
 				vscode.window.showErrorMessage(err.message);
 			});
+		}),
+
+		vscode.commands.registerCommand("peercode.paint", (session: SessionTreeNode) => {
+			sessionManager.renderPaint(context.extensionUri, session.session);
 		})
 	];
 
