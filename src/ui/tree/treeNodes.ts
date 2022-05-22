@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import { Peer } from '../../peer/peer';
-import { Session } from '../../session/session';
+import { Peer } from "../../peer/peer";
+import { Session } from "../../session/session";
 
 export interface TreeNode extends vscode.TreeItem { }
 

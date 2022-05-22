@@ -1,4 +1,4 @@
-import { BaseObservable } from '../core/observable';
+import { BaseObservable } from "../core/observable";
 
 export class Peer {
     constructor(public peername: string) {

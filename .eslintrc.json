@@ -9,6 +9,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "quotes":"warn",
         "@typescript-eslint/naming-convention": "warn",
         "@typescript-eslint/semi": "warn",
         "curly": "warn",

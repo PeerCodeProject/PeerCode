@@ -1,11 +1,11 @@
-import * as Y from 'yjs';
+import * as Y from "yjs";
 
-import {Peer, PeerManager} from '../../peer/peer';
-import {BaseObservable} from '../observable';
-import {EditorChannel, YEditorChannel} from './editor/editorChannel';
-import {ConnectionBinder, RemoteFileListener} from './listeners';
-import {RemoteFile, RemoteFileWrapper} from './remoteFile';
-import {YjsConstants} from './constants';
+import {Peer, PeerManager} from "../../peer/peer";
+import {BaseObservable} from "../observable";
+import {EditorChannel, YEditorChannel} from "./editor/editorChannel";
+import {ConnectionBinder, RemoteFileListener} from "./listeners";
+import {RemoteFile, RemoteFileWrapper} from "./remoteFile";
+import {YjsConstants} from "./constants";
 
 
 export class YjsBinder extends BaseObservable<RemoteFileListener> implements ConnectionBinder {

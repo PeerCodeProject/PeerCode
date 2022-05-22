@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import { FileStore } from '../fileShareManager';
+import { FileStore } from "../fileShareManager";
 
 
 export interface IEditorManager {
@@ -18,9 +18,9 @@ export class EditorManager implements IEditorManager {
 	}
 
 	private onDidChangeTextEditorSelection(event: vscode.TextEditorSelectionChangeEvent) {
-		const editorBinding = this.fileStore.getSharedFileByUri(event.textEditor.document.uri)?.editorBinding; // todo check for null 
-		if (editorBinding) {
-			editorBinding.updateSelections(event.selections);
+		const sharedFile = this.fileStore.getSharedFileByUri(event.textEditor.document.uri);
+		if (sharedFile) {
+			sharedFile.editorBinding.updateSelections(event.selections);
 		}
 	}
 

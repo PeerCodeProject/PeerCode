@@ -1,14 +1,14 @@
-import {Position} from '../dataStructs';
+import {Position} from "../dataStructs";
 import * as vscode from "vscode";
 import {randomInteger} from "../../utils";
 
 function getLineAndCharacter(text: string, i: number, line: number, character: number) {
-    if (text.charAt(i) === '\r') {
-        if (!(i + 1 < text.length && text.charAt(i + 1) === '\n')) {
+    if (text.charAt(i) === "\r") {
+        if (!(i + 1 < text.length && text.charAt(i + 1) === "\n")) {
             line++;
             character = 0;
         }
-    } else if (text.charAt(i) === '\n') {
+    } else if (text.charAt(i) === "\n") {
         line++;
         character = 0;
     } else {

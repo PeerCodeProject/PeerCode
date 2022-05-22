@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {Position, TextChange, TextChangeType} from '../../dataStructs';
-import { createRange } from '../textUtil';
-import {DocumentChannel} from './documentChannel';
+import {Position, TextChange, TextChangeType} from "../../dataStructs";
+import { createRange } from "../textUtil";
+import {DocumentChannel} from "./documentChannel";
 
 
 export interface DocumentChannelListener {

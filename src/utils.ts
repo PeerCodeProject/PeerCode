@@ -1,7 +1,7 @@
 const globalTemp: any = global;
 
 export function initGlobal() {
-    globalTemp.WebSocket = require('ws');
+    globalTemp.WebSocket = require("ws");
     // process.env['LOG'] = '*';
 
 }

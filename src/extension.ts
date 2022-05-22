@@ -1,25 +1,25 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import { config } from './config';
-import { ConnectorFactory } from './connector/connectorFactory';
-import { FileSharer } from './core/fs/fileSharer';
-import { getWorkspacePath } from './core/fs/fileSystemManager';
-import { SessionManager } from './session/sessionManager';
-import { PeerCodeSessionTreeDataProvider } from './ui/tree/peerCodeTreeDataProvider';
-import { initGlobal } from './utils';
+import { config } from "./config";
+import { ConnectorFactory } from "./connector/connectorFactory";
+import { FileSharer } from "./core/fs/fileSharer";
+import { getWorkspacePath } from "./core/fs/fileSystemManager";
+import { SessionManager } from "./session/sessionManager";
+import { PeerCodeSessionTreeDataProvider } from "./ui/tree/peerCodeTreeDataProvider";
+import { initGlobal } from "./utils";
 
 
 export async function activate(context: vscode.ExtensionContext) {
 
-	console.log('"peercode" is now active!');
+	console.log("\"peercode\" is now active!");
 	console.log("absolutePath", context.asAbsolutePath("bla"));
-	console.log('extensionPath', context.extensionPath);
-	console.log('extensionUri', context.extensionUri);
+	console.log("extensionPath", context.extensionPath);
+	console.log("extensionUri", context.extensionUri);
 
 	initGlobal();
 	init(context);
 	// await sessionManager.createSession();
-	console.log('peercode eneded activation');
+	console.log("peercode eneded activation");
 }
 
 
@@ -30,14 +30,14 @@ export function deactivate() {
 function registerCommands(context: vscode.ExtensionContext, sessionManager: SessionManager) {
 
 	const disposables = [
-		vscode.commands.registerCommand('peercode.StartSession', async () => {
+		vscode.commands.registerCommand("peercode.StartSession", async () => {
 			await sessionManager.startSession().catch(err => {
 				console.log("Error in StartSession", err);
 				vscode.window.showErrorMessage(err.message);
 			});
 		}),
 
-		vscode.commands.registerCommand('peercode.JoinSession', async () => {
+		vscode.commands.registerCommand("peercode.JoinSession", async () => {
 			await sessionManager.joinSession().catch(err => {
 				console.log("Error in JoinSession", err);
 				vscode.window.showErrorMessage(err.message);

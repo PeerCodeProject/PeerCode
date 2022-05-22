@@ -1,8 +1,8 @@
-import * as vscode from 'vscode';
-import { TreeNode, SessionTreeNode, SessionsTreeNode, PeerTreeNode } from './treeNodes';
-import { Session, SessionListener } from '../../session/session';
-import { SessionManager } from '../../session/sessionManager';
-import { Peer, PeerConnectionListener } from '../../peer/peer';
+import * as vscode from "vscode";
+import { TreeNode, SessionTreeNode, SessionsTreeNode, PeerTreeNode } from "./treeNodes";
+import { Session, SessionListener } from "../../session/session";
+import { SessionManager } from "../../session/sessionManager";
+import { Peer, PeerConnectionListener } from "../../peer/peer";
 
 type EmmitedEventType = void | TreeNode | TreeNode[] | null | undefined;
 

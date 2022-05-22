@@ -1,7 +1,7 @@
 import {BaseObservable} from "../../observable";
 import {DocumentChannel, YDocumentChannel} from "../document/documentChannel";
 import * as Y from "yjs";
-import {PeerSelection, Selection} from '../../dataStructs';
+import {PeerSelection, Selection} from "../../dataStructs";
 import {YFile} from "../remoteFile";
 import {EditorChannelListener} from "./editorBinding";
 

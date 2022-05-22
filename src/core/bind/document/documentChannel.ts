@@ -1,10 +1,10 @@
-import * as Y from 'yjs';
+import * as Y from "yjs";
 
-import {TextChange, TextChangeType} from '../../dataStructs';
-import {BaseObservable} from '../../observable';
-import {YFile} from '../remoteFile';
-import * as util from '../textUtil';
-import {DocumentChannelListener} from './documentBinding';
+import {TextChange, TextChangeType} from "../../dataStructs";
+import {BaseObservable} from "../../observable";
+import {YFile} from "../remoteFile";
+import * as util from "../textUtil";
+import {DocumentChannelListener} from "./documentBinding";
 
 
 export interface DocumentChannel {

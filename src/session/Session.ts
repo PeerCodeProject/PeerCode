@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {IShareLocalToRemote} from '../core/bind/listeners';
-import {Peer, PeerManager} from '../peer/peer';
+import { IShareLocalToRemote } from "../core/bind/listeners";
+import { Peer, PeerManager } from "../peer/peer";
 
 export interface SessionListener {
 
@@ -13,8 +13,8 @@ export interface SessionListener {
 export class Session {
 
     constructor(private roomname: string,
-                private peerManager: PeerManager,
-                private shareLocalToRemote: IShareLocalToRemote) {
+        private peerManager: PeerManager,
+        private shareLocalToRemote: IShareLocalToRemote) {
 
     }
 

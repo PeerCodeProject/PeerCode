@@ -1,6 +1,6 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {FileStore} from '../fileShareManager';
+import {FileStore} from "../fileShareManager";
 
 export interface IDocumentManager {
     initializeTextToRemote(document: vscode.TextDocument): void;

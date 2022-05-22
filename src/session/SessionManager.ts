@@ -1,16 +1,17 @@
-import * as vscode from 'vscode';
-import { input } from '../utils';
-import { BaseObservable } from '../core/observable';
-import { IConnector } from '../connector/conn';
-import { Session, SessionListener } from './session';
-import { FileSharer } from '../core/fs/fileSharer';
+import * as vscode from "vscode";
+
+import { IConnector } from "../connector/conn";
+import { FileSharer } from "../core/fs/fileSharer";
+import { BaseObservable } from "../core/observable";
+import { input } from "../utils";
+import { Session, SessionListener } from "./session";
 
 export class SessionManager extends BaseObservable<SessionListener> {
 
     private sessions: Session[] = [];
 
     constructor(private connector: IConnector,
-                private fileSharer: FileSharer) {
+        private fileSharer: FileSharer) {
         super();
     }
 
@@ -57,7 +58,7 @@ async function getSessionInfo() {
 
     let username = await input(async () => {
         return vscode.window.showInputBox(
-            { prompt: 'Enter your username' }
+            { prompt: "Enter your username" }
         );
     });
     return { username, "roomname": "roomname1" };

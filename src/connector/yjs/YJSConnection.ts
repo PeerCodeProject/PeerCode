@@ -1,11 +1,11 @@
-import { Doc } from 'yjs';
+import { Doc } from "yjs";
 
-import { YjsBinder } from '../../core/bind/binder';
-import FileShareManager from '../../core/bind/fileShareManager';
-import { FileSystemManager } from '../../core/fs/fileSystemManager';
-import { PeerManager } from '../../peer/peer';
-import { Session } from '../../session/session';
-import { IConnection } from '../conn';
+import { YjsBinder } from "../../core/bind/binder";
+import FileShareManager from "../../core/bind/fileShareManager";
+import { FileSystemManager } from "../../core/fs/fileSystemManager";
+import { PeerManager } from "../../peer/peer";
+import { Session } from "../../session/session";
+import { IConnection } from "../conn";
 
 export class YjsConnection implements IConnection {
 

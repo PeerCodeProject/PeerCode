@@ -1,6 +1,6 @@
-import * as path from 'path';
-import * as vscode from 'vscode';
-import * as fs from 'fs';
+import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
 
 export class FileSystemManager {
     private static intastance: FileSystemManager | null = null;

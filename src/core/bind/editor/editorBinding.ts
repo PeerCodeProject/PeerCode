@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
-import {Selection} from '../../dataStructs';
-import {getFileKeyFromUri} from '../../fs/fileSystemManager';
-import {EditorChannel} from './editorChannel';
+import * as vscode from "vscode";
+import {Selection} from "../../dataStructs";
+import {getFileKeyFromUri} from "../../fs/fileSystemManager";
+import {EditorChannel} from "./editorChannel";
 import {getPosition, getRandomColor, getVSCodePosition, isCursor} from "../textUtil";
 
 
@@ -16,7 +16,7 @@ const selectionDecoration = vscode.window.createTextEditorDecorationType({
 });
 const cursorDecoration = vscode.window.createTextEditorDecorationType({
     border: "solid " + color,
-    borderWidth: '6px 1px 6px 1px'
+    borderWidth: "6px 1px 6px 1px"
 });
 
 

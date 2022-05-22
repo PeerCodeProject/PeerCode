@@ -1,7 +1,7 @@
-import * as Y from 'yjs';
+import * as Y from "yjs";
 
-import { PeerSelection } from '../dataStructs';
-import { YjsConstants } from './constants';
+import { PeerSelection } from "../dataStructs";
+import { YjsConstants } from "./constants";
 
 export interface YFile {
     peer: string;

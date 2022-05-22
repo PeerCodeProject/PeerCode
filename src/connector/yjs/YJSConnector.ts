@@ -1,9 +1,9 @@
-import { WebsocketProvider } from 'y-websocket';
-import * as Y from 'yjs';
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
 
-import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
-import { IConnection, IConnector } from '../conn';
-import { YjsConnection } from './YJSConnection';
+import { WebrtcProvider } from "../../y-webrtc/y-webrtc";
+import { IConnection, IConnector } from "../conn";
+import { YjsConnection } from "./YJSConnection";
 
 
 export abstract class YjsConnector implements IConnector {
@@ -22,10 +22,10 @@ export class YWebSocketConnector extends YjsConnector {
         let ydoc = new Y.Doc();
         const provider = new WebsocketProvider(this.wsServerUrl, room, ydoc,
             {
-                WebSocketPolyfill: require('ws')  // eslint-disable-line 
+                WebSocketPolyfill: require('ws')  // eslint-disable-line
             });
         await this.awaitConnection(provider);
-        console.debug('Connected to:' + room);
+        console.debug("Connected to:" + room);
 
         return new YjsConnection(ydoc, username, room);
     }
@@ -33,7 +33,7 @@ export class YWebSocketConnector extends YjsConnector {
 
     private awaitConnection(provider: WebsocketProvider) {
         return new Promise<void>((resolve, _reject) => {
-            provider.on('status', (event: any) => {
+            provider.on("status", (event: any) => {
                 let status = event.status;
                 console.debug("status on ws connect:" + status);
                 if (status === "connected") {

@@ -1,12 +1,12 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-import {FileSystemManager, getFileKeyFromUri} from '../fs/fileSystemManager';
-import DocumentBinding from './document/documentBinding';
-import {DocumentManager, IDocumentManager} from './document/documentManager';
-import {EditorChannel} from './editor/editorChannel';
-import EditorBinding from './editor/editorBinding';
-import {EditorManager, IEditorManager} from './editor/editorManager';
-import {ConnectionBinder, IShareLocalToRemote, RemoteFileListener} from './listeners';
+import {FileSystemManager, getFileKeyFromUri} from "../fs/fileSystemManager";
+import DocumentBinding from "./document/documentBinding";
+import {DocumentManager, IDocumentManager} from "./document/documentManager";
+import {EditorChannel} from "./editor/editorChannel";
+import EditorBinding from "./editor/editorBinding";
+import {EditorManager, IEditorManager} from "./editor/editorManager";
+import {ConnectionBinder, IShareLocalToRemote, RemoteFileListener} from "./listeners";
 
 
 export class FileStore {
