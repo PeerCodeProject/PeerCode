@@ -1,5 +1,5 @@
 import { Session } from "../../session/session";
-
+import * as vscode from "vscode";
 import { getAllFiles } from "./fileSystemManager";
 
 export class FileSharer {
@@ -13,6 +13,10 @@ export class FileSharer {
         for (const file of files) {
             sess.shareLocalFile(file);
         }
+    }
+
+    shareFile(sess: Session, filePath: vscode.Uri) {
+         sess.shareLocalFile(filePath);
     }
 }
 

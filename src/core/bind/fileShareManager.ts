@@ -46,7 +46,7 @@ export class SharedPeerFile {
 
 export default class FileShareManager implements IShareLocalToRemote, RemoteFileListener {
     private fileStore = new FileStore();
-    private documentManager: IDocumentManager = new DocumentManager(this.fileStore);
+    private documentManager: IDocumentManager = new DocumentManager(this.fileStore, this);
     private editorManager: IEditorManager = new EditorManager(this.fileStore);
 
     constructor(

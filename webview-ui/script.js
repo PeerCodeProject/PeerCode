@@ -1,7 +1,7 @@
 /* eslint-env browser */
 
 import { getStroke } from "https://esm.sh/perfect-freehand@1.0.16";
-import * as Y from "https://esm.sh/yjs@13.5.35";
+import * as Y from "https://esm.sh/yjs@13.5.38";
 import { WebrtcProvider } from "https://esm.sh/y-webrtc@10.2.3";
 
 console.log(window.username);
@@ -150,6 +150,7 @@ svg.addEventListener("pointermove", (event) => {
     currentStroke = null;
     return;
   }
+  // check for null currentStroke
   currentStroke.get("path").push([[event.x, event.y, event.pressure]]);
 });
 

@@ -9,18 +9,20 @@ import { PeerCodeSessionTreeDataProvider } from "./ui/tree/peerCodeTreeDataProvi
 import { initGlobal } from "./utils";
 import { SessionTreeNode } from "./ui/tree/treeNodes";
 import { ApplicationFacade } from './facade';
+import { DockerRunner, getAllFiles } from "./runner/docker";
+import { DockerService } from "./runner/dockerService";
 
 
 export async function activate(context: vscode.ExtensionContext) {
 
 	console.log("\"peercode\" is now active!");
+	
 	console.log("absolutePath", context.asAbsolutePath("bla"));
-	console.log("extensionPath", context.extensionPath);
-	console.log("extensionUri", context.extensionUri);
+	// console.log("extensionPath", context.extensionPath);
+	// console.log("extensionUri", context.extensionUri);
 
 	initGlobal();
 	init(context);
-	// await sessionManager.createSession();
 	console.log("peercode eneded activation");
 }
 
@@ -29,7 +31,7 @@ export function deactivate() {
 	console.debug("peercode deactivate");
 }
 
-function registerCommands(context: vscode.ExtensionContext, facade: ApplicationFacade) {
+function registerCommands(context: vscode.ExtensionContext, facade: ApplicationFacade, workspacePath: string | null) {
 
 	const disposables = [
 		vscode.commands.registerCommand("peercode.StartSession", async () => {
@@ -48,6 +50,10 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 
 		vscode.commands.registerCommand("peercode.paint", (session: SessionTreeNode) => {
 			facade.renderPaint(context.extensionUri, session.session);
+		}),
+
+		vscode.commands.registerCommand("peercode.runDocker", (session: SessionTreeNode) => {
+			facade.runDocker(session.session, workspacePath);
 		})
 	];
 
@@ -57,16 +63,18 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 function init(context: vscode.ExtensionContext) {
 	const config = new Config();
 	const connFactory = new ConnectorFactory(config);
-	const fileSharer = new FileSharer(getWorkspacePath());
+	const workspacePath = getWorkspacePath();
+	const fileSharer = new FileSharer(workspacePath);
 
 	const sessionManager = new SessionManager(connFactory.create());
-	const facade = new ApplicationFacade(config, sessionManager, fileSharer);
+	const facade = new ApplicationFacade(config, sessionManager, fileSharer, new DockerService());
+
 	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);
 	sessionManager.registerListener(treeProvider);
 
 	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
 
-	registerCommands(context, facade);
+	registerCommands(context, facade, workspacePath);
 
 }
 

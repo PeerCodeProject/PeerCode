@@ -46,7 +46,7 @@ export function makeDirSync(dir: string) {
     return true;
 }
 
-export function makeFileSync(filename: string) {
+export  function  makeFileSync(filename: string) {
     if (fs.existsSync(filename)) {
         return false;
     }

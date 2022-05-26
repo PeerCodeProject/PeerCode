@@ -68,23 +68,33 @@ export class DrawingPanel {
             "@vscode",
             "webview-ui-toolkit",
             "dist",
-            "toolkit.js", // A toolkit.min.js file is also available
+            "toolkit.js", 
         ]);
+        const perfectFreeHandLib = getUri(webview, extensionUri, [
+            "node_modules",
+            "perfect-freehand",
+            "esm",
+            "index.js"
+        ]);
+        //    <script type="module" src="${perfectFreeHandLib}" ></script>
+
         return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
         <head>
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width">
-            <script type="module" src="${toolkitUri}"></script>
-            <script type="module" src="${scriptUri}"></script>
+          <script  type="module" src="${toolkitUri}"></script>
+           <link href="${styleUri}" rel="stylesheet" type="text/css" />
+            <link href="${vscodeStyleUri}" rel="stylesheet" type="text/css" />
             <script> 
                 window.username = "${this.username}";
                 window.roomname = "${this.roomname}";
                 window.serverUrl = "${this.config.getParamSting("webrtcServerURL")}";
+                window.drawFreeHandLib = "${perfectFreeHandLib}";
+
             </script>
-            <link href="${styleUri}" rel="stylesheet" type="text/css" />
-            <link href="${vscodeStyleUri}" rel="stylesheet" type="text/css" />
+           <script type="module" src="${scriptUri}"></script>
             <title>paint</title>
         </head>
         <body>
