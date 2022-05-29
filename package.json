@@ -15,6 +15,12 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+		"Collaboration",
+		"Sharing",
+		"Remote",
+    "WebRTC"
+	],
   "activationEvents": [
     "*"
   ],
