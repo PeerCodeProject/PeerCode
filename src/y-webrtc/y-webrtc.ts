@@ -26,6 +26,8 @@ const messageSync = 0;
 const messageQueryAwareness = 3;
 const messageAwareness = 1;
 const messageBcPeerId = 4;
+const messageTunneledRequest = 5;
+const messageTunneledResponse = 6;
 
 const signalingConns = new Map<string, SignalingConn>();
 
@@ -59,6 +61,16 @@ const readMessage = (room: Room, buf: Uint8Array, syncedCallback: callBack): enc
   const doc = room.doc;
   let sendReply = false;
   switch (messageType) {
+    case messageTunneledRequest: {
+      console.log("messageTunneledRequest");
+      room.provider.emit("tunneledClientRequest",[decoding.readVarString(decoder)]);
+      break;
+    }
+    case messageTunneledResponse: {
+      console.log("messageTunneledResponse");
+      room.provider.emit("tunneledServerResponse", [decoding.readVarString(decoder)]);
+      break;
+    }
     case messageSync: {
       encoding.writeVarUint(encoder, messageSync);
       const syncMessageType = syncProtocol.readSyncMessage(
@@ -187,7 +199,11 @@ const broadcastWebrtcConn = (room: Room, m: Uint8Array) => {
   log("broadcast message in ", logging.BOLD, room.name, logging.UNBOLD);
   room.webrtcConns.forEach((conn) => {
     try {
-      conn.peer.send(m);
+      if (conn.peer.connected) {
+        conn.peer.send(m);
+      } else {
+        console.warn("room is not connected:" + room.name);
+      }
     } catch (e) {
       console.log("error in broadcastWebrtcConn ", e);
     }
@@ -343,6 +359,24 @@ export class Room {
     this.mux = createMutex();
     this.bcconnected = false;
     this.bcSubscriber = this.bcSubscriber.bind(this);
+
+    this.provider.on("clientRequest", async (data: string) => {
+      console.log("clientRequest", data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageTunneledRequest);
+      encoding.writeVarString(encoder,data);
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+    });
+
+    this.provider.on("serverResponse", async (data: string) => {
+      console.log("serverResponse", data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageTunneledResponse);
+      encoding.writeVarString(encoder, data);
+
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+    });
+
     process.on("exit", this.beforeUnloadHandler);
   }
 
@@ -412,14 +446,14 @@ export class Room {
     process.off("exit", this.beforeUnloadHandler);
   }
 
-  private bcSubscriber(data: ArrayBuffer): any {
-    cryptoutils.decrypt(new Uint8Array(data), this.key).then((m: any) =>
-      this.mux(() => {
+  private bcSubscriber(data: ArrayBuffer) {
+    cryptoutils.decrypt(new Uint8Array(data), this.key).then((m: Uint8Array) =>
+      this.mux(async () => {
         const reply = readMessage(this, m, () => {
           // console.log("read message _bcSubscriber");
         });
         if (reply) {
-          broadcastBcMessage(this, encoding.toUint8Array(reply));
+          await broadcastBcMessage(this, encoding.toUint8Array(reply));
         }
       }, undefined)
     );
@@ -429,8 +463,8 @@ export class Room {
   * Listens to Yjs updates and sends them to remote peers
   *
   */
-  private docUpdateHandler(update: Uint8Array, _origin: any) {
-    // console.log("_docUpdateHandler origin", _origin, this);
+  private docUpdateHandler(update: Uint8Array) {
+    console.log("docUpdateHandler:", messageSync);
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
     syncProtocol.writeUpdate(encoder, update);
@@ -541,6 +575,7 @@ export class SignalingConn extends ws.WebsocketClient {
                 ]);
             switch (data.type) {
               case "announce":
+                console.log("announce", data);
                 if (webrtcConns.size < room.provider.maxConns) {
                   map.setIfUndefined(
                     webrtcConns,
@@ -552,6 +587,7 @@ export class SignalingConn extends ws.WebsocketClient {
                 break;
               case "signal":
                 if (data.to === peerId) {
+                  console.log("signal", data, peerId);
                   map
                     .setIfUndefined(
                       webrtcConns,
@@ -592,7 +628,7 @@ export class SignalingConn extends ws.WebsocketClient {
 export class WebrtcProvider extends Observable<string> {
 
   awareness: Awareness;
-  maxConns: any;
+  maxConns: number;
   filterBcConns: boolean;
   shouldConnect: boolean;
   signalingConns: SignalingConn[];
@@ -604,11 +640,8 @@ export class WebrtcProvider extends Observable<string> {
   constructor(
     public roomName: string,
     public doc: Y.Doc,
-    public signalingUrls: string[] = [
-      "wss://signaling.yjs.dev",
-      "wss://y-webrtc-signaling-eu.herokuapp.com",
-      "wss://y-webrtc-signaling-us.herokuapp.com",
-    ],
+    public signalingUrls: string[],
+    public isOwner: boolean
   ) {
     super();
     this.filterBcConns = true;

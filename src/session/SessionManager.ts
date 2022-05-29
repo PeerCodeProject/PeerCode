@@ -1,11 +1,9 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-import { IConnector } from "../connector/conn";
-import { FileSharer } from "../core/fs/fileSharer";
-import { BaseObservable } from "../core/observable";
-import { input } from "../utils";
-import { Session, SessionListener } from "./session";
-import { DrawingPanel } from "../ui/webviews/panel/paint";
+import { IConnector } from '../connector/conn';
+import { BaseObservable } from '../core/observable';
+import { input } from '../utils';
+import { Session, SessionListener } from './session';
 
 export class SessionManager extends BaseObservable<SessionListener> {
 
@@ -18,7 +16,7 @@ export class SessionManager extends BaseObservable<SessionListener> {
 
     async createSession(isSessionOwner: boolean = false): Promise<Session> {
         const { username, roomname } = await getSessionInfo();
-        const conn = await this.connector.connect(username, roomname);
+        const conn = await this.connector.connect(username, roomname, isSessionOwner);
         const session = conn.getSession();
         this.addSession(session);
         return session;
@@ -37,16 +35,16 @@ export class SessionManager extends BaseObservable<SessionListener> {
 
 
 async function getSessionInfo() {
-    // let roomname = await input(async () => {
-    //     return vscode.window.showInputBox(
-    //         { prompt: 'Enter Room' }
-    //     );
-    // });
+    const roomname = await input(async () => {
+        return vscode.window.showInputBox(
+            { prompt: 'Enter Room' }
+        );
+    });
 
     const username = await input(async () => {
         return vscode.window.showInputBox(
             { prompt: "Enter your username" }
         );
     });
-    return { username, "roomname": "roomname1" };
+    return { username, roomname};
 }

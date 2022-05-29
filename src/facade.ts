@@ -25,7 +25,7 @@ export class ApplicationFacade {
     }
 
     async joinSession() {
-        await this.sessionManager.createSession(true);
+        await this.sessionManager.createSession();
     }
 
     renderPaint(extensionUri: vscode.Uri, session: Session) {

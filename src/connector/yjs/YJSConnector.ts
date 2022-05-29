@@ -1,14 +1,14 @@
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
+import { WebsocketProvider } from 'y-websocket';
+import * as Y from 'yjs';
 
-import { WebrtcProvider } from "../../y-webrtc/y-webrtc";
-import { IConnection, IConnector } from "../conn";
-import { RTCProvider, SocketProvider } from "./provider";
-import { YjsConnection } from "./YJSConnection";
-
+import { tunnelClient, tunnelServer } from '../../tunneling/tunnel';
+import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
+import { IConnection, IConnector } from '../conn';
+import { RTCProvider, SocketProvider } from './provider';
+import { YjsConnection } from './YJSConnection';
 
 export abstract class YjsConnector implements IConnector {
-    abstract connect(username: string, room: string): Promise<IConnection>;
+    abstract connect(username: string, room: string, isOwner: boolean): Promise<IConnection>;
 
 }
 
@@ -18,7 +18,7 @@ export class YWebSocketConnector extends YjsConnector {
         super();
     }
 
-    async connect(username: string, room: string): Promise<IConnection> {
+    async connect(username: string, room: string, isOwner: boolean): Promise<IConnection> {
         console.debug("connecting via websocket to " + this.wsServerUrl + " room: " + room + " username: " + username);
         const ydoc = new Y.Doc();
         const provider = new WebsocketProvider(this.wsServerUrl, room, ydoc,
@@ -52,11 +52,17 @@ export class YWebRTCConnector extends YjsConnector {
         super();
     }
 
-    async connect(username: string, room: string): Promise<IConnection> {
+    async connect(username: string, room: string, isOwner: boolean): Promise<IConnection> {
         console.debug("connecting via webrtc to " + this.signalingServerUrl + " room: " + room + " username: " + username);
         const ydoc = new Y.Doc();
-        const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl]);
+        const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl], isOwner);
         await this.awaitConnection(provider);
+
+        if (isOwner) {
+            tunnelServer(provider.room!.webrtcConns, provider, 8888);
+        } else {
+            tunnelClient(provider.room!.webrtcConns, provider);
+        }
         return new YjsConnection(new RTCProvider(provider), ydoc, username, room);
 
     }
@@ -74,5 +80,7 @@ export class YWebRTCConnector extends YjsConnector {
             });
         });
     }
+
+
 
 }

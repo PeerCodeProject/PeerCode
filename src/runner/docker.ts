@@ -81,6 +81,7 @@ function writeLogFile(stream: NodeJS.ReadableStream, fileName: string) {
     }
 
     const writeStream = fs.createWriteStream(fileName, { flags: 'a' });
+    // stream.pipe(writeStream);
     stream.on('data', function (chunk: Buffer) {
             writeStream.write(chunk);
     });

@@ -1,12 +1,16 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "ES2020",
+		"target": "ESNEXT",
 		"lib": [
-			"ES2020"
+			"ESNEXT",
+			// "DOM"
 		],
 		"sourceMap": true,
 		"rootDir": "src",
+		"extendedDiagnostics": true,
+		// "explainFiles":true,
+
 		"forceConsistentCasingInFileNames":true,
 		/* Additional Checks */
 		"noImplicitReturns": true, /* Report error when not all code paths in function return a value. */

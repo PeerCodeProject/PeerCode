@@ -9,14 +9,13 @@ import { PeerCodeSessionTreeDataProvider } from "./ui/tree/peerCodeTreeDataProvi
 import { initGlobal } from "./utils";
 import { SessionTreeNode } from "./ui/tree/treeNodes";
 import { ApplicationFacade } from './facade';
-import { DockerRunner, getAllFiles } from "./runner/docker";
 import { DockerService } from "./runner/dockerService";
 
 
 export async function activate(context: vscode.ExtensionContext) {
 
 	console.log("\"peercode\" is now active!");
-	
+
 	console.log("absolutePath", context.asAbsolutePath("bla"));
 	// console.log("extensionPath", context.extensionPath);
 	// console.log("extensionUri", context.extensionUri);
@@ -35,16 +34,16 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 
 	const disposables = [
 		vscode.commands.registerCommand("peercode.StartSession", async () => {
-			await facade.startSession().catch(err => {
+			await facade.startSession().catch(async err => {
 				console.log("Error in StartSession", err);
-				vscode.window.showErrorMessage(err.message);
+				await vscode.window.showErrorMessage(err.message);
 			});
 		}),
 
 		vscode.commands.registerCommand("peercode.JoinSession", async () => {
-			await facade.joinSession().catch(err => {
+			await facade.joinSession().catch(async err => {
 				console.log("Error in JoinSession", err);
-				vscode.window.showErrorMessage(err.message);
+				await vscode.window.showErrorMessage(err.message);
 			});
 		}),
 
@@ -52,8 +51,8 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 			facade.renderPaint(context.extensionUri, session.session);
 		}),
 
-		vscode.commands.registerCommand("peercode.runDocker", (session: SessionTreeNode) => {
-			facade.runDocker(session.session, workspacePath);
+		vscode.commands.registerCommand("peercode.runDocker", async (session: SessionTreeNode) => {
+			await facade.runDocker(session.session, workspacePath);
 		})
 	];
 
