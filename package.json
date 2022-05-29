@@ -6,6 +6,12 @@
   "engines": {
     "vscode": "^1.66.0"
   },
+  "publisher": "Liquidibrium",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeerCodeProject/PeerCode"
+  },
   "categories": [
     "Other"
   ],
@@ -88,7 +94,10 @@
     "lint": "eslint src --ext ts,js --fix",
     "test": "node ./out/test/runTest.js",
     "install": "cross-env DEBUG=true npm install wrtc",
-    "init": "node ./scripts/init.js"
+    "init": "node ./scripts/init.js",
+    "vsce-package": "vsce package",
+    "deploy": "vsce publish",
+    "pre-release": "vsce publish --pre-release"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.9",
