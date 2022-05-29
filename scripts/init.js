@@ -29,11 +29,11 @@ if (!fs.existsSync(DEBUG_WRTC_FOLDER)) {
         path.join(DEBUG_WRTC_FOLDER, "wrtc.node")
     );
     const wrtcLib = path.join(RELEASE_WRTC_FOLDER, "wrtc.lib");
-    if (!fs.existsSync(wrtcLib)) {
+    if (fs.existsSync(wrtcLib)) {
         fs.copyFileSync(wrtcLib, path.join(DEBUG_WRTC_FOLDER, "wrtc.lib"));
     }
     const wrtcExp = path.join(RELEASE_WRTC_FOLDER, "wrtc.exp");
-    if (!fs.existsSync(wrtcExp)) {
+    if (fs.existsSync(wrtcExp)) {
         fs.copyFileSync(wrtcExp, path.join(DEBUG_WRTC_FOLDER, "wrtc.exp"));
     }
 }
