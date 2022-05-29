@@ -4,7 +4,7 @@
 
 1. Share session:
 2. Join Other's session:
-3. stop Session as Room owner
+3. stop Sess as Room owner
 4. leave session
 5. show participants
 6. paint
@@ -12,10 +12,10 @@
 8. show output
 9. share port
 
-### Start Session / Create new room
+### Start Sess / Create new room
 
 command:
-> `peercode: Start Session`
+> `peercode: Start Sess`
 
 Inputs:
 
@@ -25,10 +25,10 @@ Inputs:
 
 To share session user must have opened Folder which will be shared to other peers
 
-### Join Session / Join room
+### Join Sess / Join room
 
 command:
-> `peercode: Join Session`
+> `peercode: Join Sess`
 
 Inputs:
 
@@ -36,7 +36,7 @@ Inputs:
 2. username
 3. signaling server address (optional)
 
-In Explorer, tree view will be opened for Shared Folder from Session/Room owner
+In Explorer, tree view will be opened for Shared Folder from Sess/Room owner
 
 ## Recourses
 

@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 
 import { Config } from "./config";
-import { ConnectorFactory } from "./connector/connectorFactory";
+import { ConnFactory } from "./connector/connFactory";
 import { FileSharer } from "./core/fs/fileSharer";
 import { getWorkspacePath } from "./core/fs/fileSystemManager";
-import { SessionManager } from "./session/sessionManager";
+import { SessManager } from "./session/sessManager";
 import { PeerCodeSessionTreeDataProvider } from "./ui/tree/peerCodeTreeDataProvider";
 import { initGlobal } from "./utils";
 import { SessionTreeNode } from "./ui/tree/treeNodes";
@@ -61,11 +61,11 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 
 function init(context: vscode.ExtensionContext) {
 	const config = new Config();
-	const connFactory = new ConnectorFactory(config);
+	const connFactory = new ConnFactory(config);
 	const workspacePath = getWorkspacePath();
 	const fileSharer = new FileSharer(workspacePath);
 
-	const sessionManager = new SessionManager(connFactory.create());
+	const sessionManager = new SessManager(connFactory.create());
 	const facade = new ApplicationFacade(config, sessionManager, fileSharer, new DockerService());
 
 	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);

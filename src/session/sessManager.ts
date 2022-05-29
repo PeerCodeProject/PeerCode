@@ -3,18 +3,18 @@ import * as vscode from 'vscode';
 import { IConnector } from '../connector/conn';
 import { BaseObservable } from '../core/observable';
 import { input } from '../utils';
-import { Session, SessionListener } from './session';
+import { Sess, SessionListener } from './sess';
 
-export class SessionManager extends BaseObservable<SessionListener> {
+export class SessManager extends BaseObservable<SessionListener> {
 
 
-    private sessions: Session[] = [];
+    private sessions: Sess[] = [];
 
     constructor(private connector: IConnector) {
         super();
     }
 
-    async createSession(isSessionOwner: boolean = false): Promise<Session> {
+    async createSession(isSessionOwner: boolean = false): Promise<Sess> {
         const { username, roomname } = await getSessionInfo();
         const conn = await this.connector.connect(username, roomname, isSessionOwner);
         const session = conn.getSession();
@@ -22,12 +22,12 @@ export class SessionManager extends BaseObservable<SessionListener> {
         return session;
     }
 
-    addSession(session: Session) {
+    addSession(session: Sess) {
         this.sessions.push(session);
         this.notify(async (listener) => listener.onAddSession(session));
     }
 
-    getSessions(): Session[] {
+    getSessions(): Sess[] {
         return this.sessions;
     }
 

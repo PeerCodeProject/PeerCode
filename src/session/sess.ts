@@ -5,12 +5,12 @@ import { Peer, PeerManager } from "../peer/peer";
 
 export interface SessionListener {
 
-    onAddSession(session: Session): void;
+    onAddSession(session: Sess): void;
 
-    onRemoveSession(session: Session): void;
+    onRemoveSession(session: Sess): void;
 }
 
-export class Session {
+export class Sess {
 
     constructor(private roomname: string,
         private username: string,

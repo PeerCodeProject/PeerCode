@@ -1,4 +1,4 @@
-import { Session } from "../../session/session";
+import { Sess } from "../../session/sess";
 import * as vscode from "vscode";
 import { getAllFiles } from "./fileSystemManager";
 
@@ -7,7 +7,7 @@ export class FileSharer {
     constructor(public workspacePath: string | null) {
     }
 
-    async shareWorkspace(sess: Session) {
+    async shareWorkspace(sess: Sess) {
         const files = await getAllFiles(this.workspacePath!);
         console.log("files to Share: " + files);
         for (const file of files) {
@@ -15,7 +15,7 @@ export class FileSharer {
         }
     }
 
-    shareFile(sess: Session, filePath: vscode.Uri) {
+    shareFile(sess: Sess, filePath: vscode.Uri) {
          sess.shareLocalFile(filePath);
     }
 }

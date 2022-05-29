@@ -16,11 +16,11 @@
     "Other"
   ],
   "keywords": [
-		"Collaboration",
-		"Sharing",
-		"Remote",
+    "Collaboration",
+    "Sharing",
+    "Remote",
     "WebRTC"
-	],
+  ],
   "activationEvents": [
     "*"
   ],
@@ -107,7 +107,6 @@
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.9",
-    "@types/dotenv": "^8.2.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.0",
     "@types/node": "16.x",

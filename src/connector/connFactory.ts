@@ -4,7 +4,7 @@ import { YWebRTCConnector, YWebSocketConnector } from "./yjs/YJSConnector";
 
 
 
-export class ConnectorFactory {
+export class ConnFactory {
 
     constructor(private config: IConfig) {
     }

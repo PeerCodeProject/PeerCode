@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { Peer } from "../../peer/peer";
-import { Session } from "../../session/session";
+import { Sess } from "../../session/sess";
 
 export type TreeNode = vscode.TreeItem;
 
@@ -28,7 +28,7 @@ export class PeerTreeNode extends vscode.TreeItem implements TreeNode {
 
 
 export class SessionTreeNode extends vscode.TreeItem implements TreeNode {
-    constructor(public session: Session) {
+    constructor(public session: Sess) {
         const state = session.getSessionPeers().length === 0 ?
             vscode.TreeItemCollapsibleState.None :
             vscode.TreeItemCollapsibleState.Expanded;
