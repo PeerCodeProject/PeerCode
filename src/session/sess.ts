@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { YjsProviderWrapper } from "../connector/yjs/provider";
 
 import { IShareLocalToRemote } from "../core/bind/listeners";
 import { Peer, PeerManager } from "../peer/peer";
@@ -12,10 +13,12 @@ export interface SessionListener {
 
 export class Sess {
 
-    constructor(private roomname: string,
-        private username: string,
+    constructor(public readonly roomname: string,
+        private readonly username: string,
         private peerManager: PeerManager,
-        private shareLocalToRemote: IShareLocalToRemote) {
+        private shareLocalToRemote: IShareLocalToRemote,
+        public readonly provider: YjsProviderWrapper,
+        public readonly isOwner: boolean) {
 
     }
 

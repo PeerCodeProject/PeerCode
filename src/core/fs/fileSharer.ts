@@ -16,7 +16,7 @@ export class FileSharer {
     }
 
     shareFile(sess: Sess, filePath: vscode.Uri) {
-         sess.shareLocalFile(filePath);
+        sess.shareLocalFile(filePath);
     }
 }
 

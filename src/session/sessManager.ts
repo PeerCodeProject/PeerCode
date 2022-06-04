@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { IConnector } from '../connector/conn';
 import { BaseObservable } from '../core/observable';
+import { DockerService } from '../runner/dockerService';
 import { input } from '../utils';
 import { Sess, SessionListener } from './sess';
 
@@ -14,10 +15,11 @@ export class SessManager extends BaseObservable<SessionListener> {
         super();
     }
 
-    async createSession(isSessionOwner: boolean = false): Promise<Sess> {
+    async createSession(dockerService: DockerService, isSessionOwner: boolean = false): Promise<Sess> {
         const { username, roomname } = await getSessionInfo();
         const conn = await this.connector.connect(username, roomname, isSessionOwner);
         const session = conn.getSession();
+        dockerService.listenToDockerRun(session.provider.getPorvider(),session);
         this.addSession(session);
         return session;
     }

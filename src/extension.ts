@@ -53,7 +53,11 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 
 		vscode.commands.registerCommand("peercode.runDocker", async (session: SessionTreeNode) => {
 			await facade.runDocker(session.session, workspacePath);
-		})
+		}),
+		
+		vscode.commands.registerCommand("peercode.sharePort", async (session: SessionTreeNode) => {
+			await facade.sharePort(session.session);
+		}),
 	];
 
 	context.subscriptions.push(...disposables);
@@ -66,7 +70,7 @@ function init(context: vscode.ExtensionContext) {
 	const fileSharer = new FileSharer(workspacePath);
 
 	const sessionManager = new SessManager(connFactory.create());
-	const facade = new ApplicationFacade(config, sessionManager, fileSharer, new DockerService());
+	const facade = new ApplicationFacade(config, sessionManager, fileSharer, new DockerService(fileSharer));
 
 	const treeProvider = new PeerCodeSessionTreeDataProvider(sessionManager);
 	sessionManager.registerListener(treeProvider);

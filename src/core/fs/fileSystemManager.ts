@@ -72,7 +72,7 @@ export async function getAllFiles(wsPath: string): Promise<vscode.Uri[]> {
 export function getFileKeyFromUri(uri: vscode.Uri) {
     let url = uri.fsPath;
     const wspath = getWorkspacePath();
-    if (wspath!) {
+    if (wspath) {
         url = uri.fsPath.split(wspath)[1];
     }
 
