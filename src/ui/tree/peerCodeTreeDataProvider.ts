@@ -48,7 +48,7 @@ export class PeerCodeSessionTreeDataProvider implements vscode.TreeDataProvider<
     }
 
 
-    private getPeers(session: Sess) : PeerTreeNode[]{
+    private getPeers(session: Sess): PeerTreeNode[] {
         return session.getSessionPeers().map((peer: Peer) => new PeerTreeNode(peer));
     }
 

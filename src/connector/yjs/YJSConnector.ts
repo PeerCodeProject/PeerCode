@@ -28,7 +28,7 @@ export class YWebSocketConnector extends YjsConnector {
         await this.awaitConnection(provider);
         console.debug("Connected to:" + room);
 
-        return new YjsConnection(new SocketProvider(provider), ydoc, username, room);
+        return new YjsConnection(new SocketProvider(provider), ydoc, username, room, isOwner);
     }
 
 
@@ -58,12 +58,10 @@ export class YWebRTCConnector extends YjsConnector {
         const provider = new WebrtcProvider(room, ydoc, [this.signalingServerUrl], isOwner);
         await this.awaitConnection(provider);
 
-        if (isOwner) {
-            tunnelServer(provider.room!.webrtcConns, provider, 8888);
-        } else {
-            tunnelClient(provider.room!.webrtcConns, provider);
-        }
-        return new YjsConnection(new RTCProvider(provider), ydoc, username, room);
+        // provider.room!.webrtcConns,
+        tunnelClient(provider);
+
+        return new YjsConnection(new RTCProvider(provider), ydoc, username, room, isOwner);
 
     }
 
@@ -84,3 +82,5 @@ export class YWebRTCConnector extends YjsConnector {
 
 
 }
+
+

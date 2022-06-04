@@ -28,6 +28,8 @@ const messageAwareness = 1;
 const messageBcPeerId = 4;
 const messageTunneledRequest = 5;
 const messageTunneledResponse = 6;
+const messageSharePort = 7;
+const messageRunDocker = 8;
 
 const signalingConns = new Map<string, SignalingConn>();
 
@@ -69,6 +71,16 @@ const readMessage = (room: Room, buf: Uint8Array, syncedCallback: callBack): enc
     case messageTunneledResponse: {
       console.log("messageTunneledResponse");
       room.provider.emit("tunneledServerResponse", [decoding.readVarString(decoder)]);
+      break;
+    }
+    case messageSharePort: {
+      console.log("messageSharePort");
+      room.provider.emit("sharePort", [decoding.readUint16(decoder)]);
+      break;
+    }
+    case messageRunDocker: {
+      console.log("messageRunDocker");
+      room.provider.emit("runDocker", [decoding.readVarString(decoder)]);
       break;
     }
     case messageSync: {
@@ -377,6 +389,22 @@ export class Room {
       broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
     });
 
+    this.provider.on("startSharingPort", async (data: number) => {
+      console.log("startSharingPort", data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageSharePort);
+      encoding.writeUint16(encoder, data);
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+    });
+
+    this.provider.on("runDockerRemote", async (data: string) => {
+      console.log("runDockerRemote", data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageRunDocker);
+      encoding.writeVarString(encoder, data);
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+    });
+
     process.on("exit", this.beforeUnloadHandler);
   }
 
@@ -446,8 +474,8 @@ export class Room {
     process.off("exit", this.beforeUnloadHandler);
   }
 
-  private bcSubscriber(data: ArrayBuffer) {
-    cryptoutils.decrypt(new Uint8Array(data), this.key).then((m: Uint8Array) =>
+   private async bcSubscriber(data: ArrayBuffer) {
+    await cryptoutils.decrypt(new Uint8Array(data), this.key).then((m: Uint8Array) =>
       this.mux(async () => {
         const reply = readMessage(this, m, () => {
           // console.log("read message _bcSubscriber");
@@ -464,7 +492,7 @@ export class Room {
   *
   */
   private docUpdateHandler(update: Uint8Array) {
-    console.log("docUpdateHandler:", messageSync);
+    console.log("docUpdateHandler");
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
     syncProtocol.writeUpdate(encoder, update);
@@ -510,9 +538,9 @@ const openRoom = (doc: Y.Doc, provider: WebrtcProvider, name: string, key: Crypt
   return room;
 };
 
-const publishSignalingMessage = (conn: SignalingConn, room: Room, data: any) => {
+const publishSignalingMessage = async (conn: SignalingConn, room: Room, data: any) => {
   if (room.key) {
-    cryptoutils.encryptJson(data, room.key).then((data1) => {
+    await cryptoutils.encryptJson(data, room.key).then((data1) => {
       conn.send({
         type: "publish",
         topic: room.name,
@@ -540,7 +568,7 @@ export class SignalingConn extends ws.WebsocketClient {
         })
       );
     });
-    this.on("message", (m: any) => {
+    this.on("message", async (m: any) => {
       switch (m.type) {
         case "publish": {
           // console.log("on message publish", JSON.stringify(m));
@@ -602,7 +630,7 @@ export class SignalingConn extends ws.WebsocketClient {
           };
           if (room.key) {
             if (typeof m.data === "string") {
-              cryptoutils
+              await cryptoutils
                 .decryptJson(buffer.fromBase64(m.data), room.key)
                 .then(execMessage);
             }

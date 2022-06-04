@@ -1,13 +1,11 @@
 import * as http from 'http';
 import stream = require('stream');
 
-import { WebrtcConn, WebrtcProvider } from '../y-webrtc/y-webrtc';
 import fetch, { RequestInit } from "node-fetch";
+import { Observable } from 'lib0/observable';
+import * as vscode from 'vscode';
 
-export function tunnelClient(webrtcConns: Map<string, WebrtcConn>, provider: WebrtcProvider) {
-    // create server socket that listen to 8080 port
-    // and send the received data to WebrtcConn
-    const port = 8081;
+export function tunnelClient(provider: Observable<string>) {
 
     const serverHandler = async (req: http.IncomingMessage, res: http.ServerResponse) => {
         const content = await getContent(req);
@@ -28,14 +26,28 @@ export function tunnelClient(webrtcConns: Map<string, WebrtcConn>, provider: Web
         provider.on("tunneledServerResponse", responseHandler);
     };
 
-    http.createServer(serverHandler).listen(port, () => {
-        console.log(`http CLIENT TUNNEL running at port: ${port}`);
+    provider.on("sharePort", (port: number) => {
+        console.log("remote port is opened on: " + port);
+        const server = http.createServer(serverHandler);
+        server.listen(0, () => {
+            const address = server.address();
+            if (address) {
+                if (typeof address === "string") {
+                    vscode.window.showInformationMessage("Tunnel opened on: " + address);
+                } else {
+                    vscode.window.showInformationMessage("Tunnel opened on: http://localhost:" + address.port);
+                }
+            }
+            console.log(`http CLIENT TUNNEL running at: ${JSON.stringify(server.address())}`);
+        });
     });
 
 }
 
 
-export function tunnelServer(webrtcConns: Map<string, WebrtcConn>, provider: WebrtcProvider, port: number) {
+export function tunnelServer(provider: Observable<string>, port: number) {
+    provider.emit("startSharingPort", [port]);
+
     const handleTunneledRequestData = async (data1: string) => {
         const data = JSON.parse(data1);
         console.log(`Tunneled Request ${JSON.stringify(data, null, 2)}`);

@@ -55,6 +55,15 @@
           "light": "media/light/run.svg",
           "dark": "media/dark/run.svg"
         }
+      },
+      {
+        "command": "peercode.sharePort",
+        "title": "share port",
+        "category": "PeerCode",
+        "icon": {
+          "light": "media/light/addPort.svg",
+          "dark": "media/dark/addPort.svg"
+        }
       }
     ],
     "views": {
@@ -84,6 +93,11 @@
         },
         {
           "command": "peercode.runDocker",
+          "when": "view == peercode.session && viewItem == session",
+          "group": "inline"
+        },
+        {
+          "command": "peercode.sharePort",
           "when": "view == peercode.session && viewItem == session",
           "group": "inline"
         }
