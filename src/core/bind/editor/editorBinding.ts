@@ -9,19 +9,45 @@ export interface EditorChannelListener {
     onSelectionsChangedForPeer(peer: string, selections: Selection[], fileKey: string): void;
 }
 
-const color = getRandomColor();
 
-const selectionDecoration = vscode.window.createTextEditorDecorationType({
-    backgroundColor: color,
-});
-const cursorDecoration = vscode.window.createTextEditorDecorationType({
-    border: "solid " + color,
-    borderWidth: "6px 1px 6px 1px"
-});
+class UserDecorator {
+    constructor(public selectionDecoration: vscode.TextEditorDecorationType,
+        public cursorDecoration: vscode.TextEditorDecorationType) {
+    }
+}
+class UserDecoratorStore {
+    private static instance: UserDecoratorStore;
+    private colorMap: Map<string, UserDecorator> = new Map();
 
+    static getInstance() {
+        if (!UserDecoratorStore.instance) {
+            UserDecoratorStore.instance = new UserDecoratorStore();
+        }
+        return UserDecoratorStore.instance;
+    }
+
+    getColor(peer: string) {
+        let decor = this.colorMap.get(peer);
+        if (decor) {
+            return decor;
+        }
+        const color = getRandomColor();
+        const selectionDecoration = vscode.window.createTextEditorDecorationType({
+            backgroundColor: color,
+        });
+        const cursorDecoration = vscode.window.createTextEditorDecorationType({
+            border: "solid " + color,
+            borderWidth: "6px 1px 6px 1px"
+        });
+        decor = new UserDecorator(selectionDecoration, cursorDecoration);
+        this.colorMap.set(peer, decor);
+        return decor;
+    }
+}
 
 export default class EditorBinding implements EditorChannelListener {
 
+    private selectionColorStore = UserDecoratorStore.getInstance();
     constructor(
         public editorChannel: EditorChannel) {
         editorChannel.addListener(this);
@@ -46,8 +72,9 @@ export default class EditorBinding implements EditorChannelListener {
         }
         for (const editor of vscode.window.visibleTextEditors) {
             if (getFileKeyFromUri(editor.document.uri) === fileKey) {
-                editor.setDecorations(selectionDecoration, selectionRanges);
-                editor.setDecorations(cursorDecoration, cursorRanges);
+                const decor = this.selectionColorStore.getColor(peername);
+                editor.setDecorations(decor.selectionDecoration, selectionRanges);
+                editor.setDecorations(decor.cursorDecoration, cursorRanges);
                 return Promise.resolve();
             }
         }
