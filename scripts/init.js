@@ -23,6 +23,7 @@ const RELEASE_WRTC_FOLDER = path.join(
 
 // if debug folder not exists then create it and copy content from release folder
 if (!fs.existsSync(DEBUG_WRTC_FOLDER)) {
+    console.log("copying wrtc files from `release` to `debug`");
     fs.mkdirSync(DEBUG_WRTC_FOLDER);
     fs.copyFileSync(
         path.join(RELEASE_WRTC_FOLDER, "wrtc.node"),

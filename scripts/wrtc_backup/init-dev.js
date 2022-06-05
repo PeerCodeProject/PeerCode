@@ -1,8 +1,11 @@
+/* eslint-env node*/
+
 const fs = require("fs");
 const path = require("path");
 
 const DEBUG_WRTC_FOLDER = path.join(
   __dirname,
+  "..",
   "..",
   "node_modules",
   "wrtc",
@@ -10,18 +13,29 @@ const DEBUG_WRTC_FOLDER = path.join(
   "Debug"
 );
 
+console.log(
+  "debug folder: " + DEBUG_WRTC_FOLDER,
+  fs.existsSync(DEBUG_WRTC_FOLDER)
+);
+
 // if ../node_modules/wrtc/build/Debug not exists then copy recursive from ./Debug directory
 if (!fs.existsSync(DEBUG_WRTC_FOLDER)) {
+  console.log("creating wrtc folder " + DEBUG_WRTC_FOLDER);
+  fs.mkdirSync(DEBUG_WRTC_FOLDER, true);
   const backup = path.join(__dirname, "Debug");
   const bindingjs = path.join(
+    __dirname,
     "..",
+    "..",
+
     "node_modules",
     "wrtc",
     "lib",
     "binding.js"
   );
-  copyFolderRecursiveSync(backup, DEBUG_WRTC_FOLDER);
-  fs.copyFileSync(backup, bindingjs);
+  console.log("backup: " + backup + ", bindingjs: " + bindingjs);
+  copyFolderRecursiveSync(backup,  path.join(DEBUG_WRTC_FOLDER,".."));
+  fs.copyFileSync(path.join(__dirname,  "binding.js"), bindingjs,);
 }
 
 function copyFileSync(source, target) {
@@ -38,6 +52,7 @@ function copyFileSync(source, target) {
 }
 
 function copyFolderRecursiveSync(source, target) {
+  console.log("source: "+ source, ", target: "+ target);
   let files = [];
 
   // Check if folder needs to be created or integrated
