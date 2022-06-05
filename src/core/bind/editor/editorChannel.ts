@@ -46,7 +46,6 @@ export class YEditorChannel extends BaseObservable<EditorChannelListener>
 
     private syncChangedPeers(changedPeers: Set<string>, event: Y.YArrayEvent<PeerSelection>) {
         for (const changedPeer of changedPeers) {
-            console.log("changed SelectionsForPeer: " + changedPeer + ", uri:" + this.yFile.filename);
             const peerSelections = this.getSelectionsForPeer(event.target, changedPeer);
             this.notify(async (listener: EditorChannelListener) => {
                 listener.onSelectionsChangedForPeer(changedPeer, peerSelections, this.yFile.filename);

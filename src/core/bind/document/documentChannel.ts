@@ -1,13 +1,14 @@
 import * as Y from "yjs";
 
-import {TextChange, TextChangeType} from "../../dataStructs";
-import {BaseObservable} from "../../observable";
-import {YFile} from "../remoteFile";
+import { TextChange, TextChangeType } from "../../dataStructs";
+import { BaseObservable } from "../../observable";
+import { YFile } from "../remoteFile";
 import * as util from "../textUtil";
-import {DocumentChannelListener} from "./documentBinding";
+import { DocumentChannelListener } from "./documentBinding";
 
 
 export interface DocumentChannel {
+
     addListener(listener: DocumentChannelListener): void;
 
     sendChangeToRemote(change: TextChange): void;
@@ -22,23 +23,10 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
     private currentText = "";
 
     constructor(private doc: Y.Doc,
-                private currentUsername: string,
-                public yFile: YFile) {
+        private currentUsername: string,
+        public yFile: YFile) {
         super();
-        const yChangeObserver = async (event: Y.YTextEvent, transaction: Y.Transaction) => {
-            if (transaction.origin === this.currentUsername) {
-                return;
-            }
-            await this.onRemoteTextChanged(event);
-        };
-        const saveObserver = (event: any, transaction: Y.Transaction) => {
-            if (transaction.origin === this.currentUsername) {
-                return;
-            }
-            this.onRemoteSave(event);
-        };
-        this.yFile.text.observe(yChangeObserver);
-        this.yFile.saveRequests.observe(saveObserver);
+        this.initObservers();
 
         if (this.yFile.text.length > 0) {
             this.currentText = this.yFile.text.toString();
@@ -50,6 +38,24 @@ export class YDocumentChannel extends BaseObservable<DocumentChannelListener> im
         }
     }
 
+
+    private initObservers() {
+        const yChangeObserver = async (event: Y.YTextEvent, transaction: Y.Transaction) => {
+            if (transaction.origin === this.currentUsername) {
+                return;
+            }
+            await this.onRemoteTextChanged(event);
+        };
+
+        const saveObserver = (event: Y.YArrayEvent<string>, transaction: Y.Transaction) => {
+            if (transaction.origin === this.currentUsername) {
+                return;
+            }
+            this.onRemoteSave(event);
+        };
+        this.yFile.text.observe(yChangeObserver);
+        this.yFile.saveRequests.observe(saveObserver);
+    }
 
     addListener(listener: DocumentChannelListener): void {
         super.registerListener(listener);

@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 
-import {FileStore} from "../fileShareManager";
+import { FileStore } from "../fileShareManager";
 import { IShareLocalToRemote } from "../listeners";
-
+import * as fs from "fs";
 export interface IDocumentManager {
     initializeTextToRemote(document: vscode.TextDocument): void;
 }
 
 export class DocumentManager implements IDocumentManager {
 
-    constructor(private fileStore: FileStore,private sharer: IShareLocalToRemote) {
+    constructor(private fileStore: FileStore, private sharer: IShareLocalToRemote) {
         vscode.workspace.onDidChangeTextDocument(this.onChangeTextDocument.bind(this));
         vscode.workspace.onWillSaveTextDocument(this.onSaveDocument.bind(this));
         vscode.workspace.onDidCreateFiles(this.onCreateFiles.bind(this));
@@ -46,13 +46,20 @@ export class DocumentManager implements IDocumentManager {
     private onCreateFiles(event: vscode.FileCreateEvent) {
         event.files.forEach(file => {
             console.log("Handling create file event: " + file.fsPath);
+            // if file is directory skip 
+            if (fs.lstatSync(file.fsPath).isDirectory()) {
+                return;
+            }
             this.sharer.shareFile(file);
         });
-        console.log("Handling create file event: " + event);
     }
 
     private onDeleteFiles(event: vscode.FileDeleteEvent) {
         console.log("Handling delete file event: " + event);
+        event.files.forEach(async file => {
+            console.log("Handling delete file event: " + file.fsPath);
+            this.sharer.deleteFile(file);
+        });
     }
 
     private onRenameFiles(event: vscode.FileRenameEvent) {

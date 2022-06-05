@@ -1,11 +1,11 @@
 import * as Y from "yjs";
 
-import {Peer, PeerManager} from "../../peer/peer";
-import {BaseObservable} from "../observable";
-import {EditorChannel, YEditorChannel} from "./editor/editorChannel";
-import {ConnectionBinder, RemoteFileListener} from "./listeners";
-import {RemoteFile, RemoteFileWrapper} from "./remoteFile";
-import {YjsConstants} from "./constants";
+import { Peer, PeerManager } from "../../peer/peer";
+import { BaseObservable } from "../observable";
+import { EditorChannel, YEditorChannel } from "./editor/editorChannel";
+import { ConnectionBinder, RemoteFileListener } from "./listeners";
+import { RemoteFile, RemoteFileWrapper } from "./remoteFile";
+import { YjsConstants } from "./constants";
 
 
 export class YjsBinder extends BaseObservable<RemoteFileListener> implements ConnectionBinder {
@@ -14,12 +14,13 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
     private editorChannelsForPeer = new Map<string, Map<string, EditorChannel>>();
 
     constructor(public doc: Y.Doc,
-                public currentPeer: string,
-                private peerConnListener: PeerManager) {
+        public currentPeer: string,
+        private peerConnListener: PeerManager) {
         super();
         this.peers = doc.getMap(YjsConstants.peersKey);
         this.setupObservers();
     }
+
 
     private setupObservers() {
         this.peers.set(this.currentPeer, this.currentFiles);
@@ -37,7 +38,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         if (transaction.origin === this.currentPeer) {
             return;
         }
-        event.changes.keys.forEach( (key, peer) => {
+        event.changes.keys.forEach((key, peer) => {
             switch (key.action) {
                 case "add":
                     this.addPeer(peer, this.peers.get(peer)!);
@@ -79,15 +80,48 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     private onFilesChanged(peer: string, event: Y.YMapEvent<Y.Map<any>>) {
         event.changes.keys.forEach((key, filename) => {
-            if (key.action === "add") {
-                this.addPeerFile(peer, filename, this.peers.get(peer)!.get(filename)!);
+            switch (key.action) {
+                case "add":
+                    this.addPeerFile(peer, filename, this.peers.get(peer)!.get(filename)!);
+                    break;
+                case "delete":
+                    this.deletePeerFile(peer, filename);
+                    break;
+                default:
+                    break;
             }
         });
+    }
+
+    deletePeerFile(peer: string, filename: string) {
+        console.log("Deleting peer file " + filename + ", From " + peer);
+        if (!this.editorChannelsForPeer.has(peer)) {
+            console.error("peer is not in map: " + peer);
+            return;
+        }
+        const files = this.editorChannelsForPeer.get(peer);
+        if (!files) {
+            console.error("files is not in map: " + peer);
+            return;
+        }
+        if (!files.has(filename)) {
+            console.error("file is not in map: " + filename);
+            return;
+        }
+        files.delete(filename);
+
+        this.notify(async (listener) => {
+            listener.onDeleteRemoteFile(filename);
+        });
+
+        this.currentFiles.delete(filename);
+
     }
 
     addPeerFile(peer: string, filename: string, file: Y.Map<any>) {
         console.debug("Adding Peer file " + filename + ", From " + peer);
         const remoteFile = new RemoteFileWrapper(file);
+        console.log("remote file name:" + remoteFile.filename);
         if (!this.editorChannelsForPeer.has(peer)) {
             this.editorChannelsForPeer.set(peer, new Map<string, YEditorChannel>());
         }
@@ -106,6 +140,9 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     deletePeer(peer: string) {
         console.log("Deleting peer " + peer);
+        if (!this.editorChannelsForPeer.has(peer)) {
+            console.error("peer is not in map: " + peer);
+        }
     }
 
     sendLocalFile(filename: string): EditorChannel {
@@ -125,5 +162,28 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         return sync;
     }
 
+    removeFile(fileKey: string) {
+        console.log("removeFile file:" + fileKey + ", peer:", this.currentPeer);
+        if (!this.editorChannelsForPeer.has(this.currentPeer)) {
+            console.error("peer is not in map: " + this.currentPeer);
+            return;
+        }
+        const filesMap = this.editorChannelsForPeer.get(this.currentPeer);
+        if (!filesMap) {
+            console.error("peer is not registered: " + this.currentPeer);
+            return;
+        }
+
+        if (!filesMap.has(fileKey)) {
+            console.log("file is not in map: " + fileKey);
+            return;
+        }
+        filesMap.delete(fileKey);
+
+        this.doc.transact(() => {
+            this.currentFiles.delete(fileKey);
+        }, this.currentPeer);
+
+    }
 
 }

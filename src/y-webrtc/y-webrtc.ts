@@ -492,7 +492,6 @@ export class Room {
   *
   */
   private docUpdateHandler(update: Uint8Array) {
-    console.log("docUpdateHandler");
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
     syncProtocol.writeUpdate(encoder, update);

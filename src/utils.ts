@@ -1,6 +1,6 @@
 import { Uri, Webview } from "vscode";
 
-const globalTemp: any = global;
+const globalTemp: typeof globalThis = global;
 
 export function initGlobal() {
     globalTemp.WebSocket = require("ws");

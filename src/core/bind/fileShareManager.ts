@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 
-import {FileSystemManager, getFileKeyFromUri} from "../fs/fileSystemManager";
+import { FileSystemManager, getAllFiles, getFileKeyFromUri, getWorkspacePath } from '../fs/fileSystemManager';
 import DocumentBinding from "./document/documentBinding";
-import {DocumentManager, IDocumentManager} from "./document/documentManager";
-import {EditorChannel} from "./editor/editorChannel";
+import { DocumentManager, IDocumentManager } from "./document/documentManager";
+import { EditorChannel } from "./editor/editorChannel";
 import EditorBinding from "./editor/editorBinding";
-import {EditorManager, IEditorManager} from "./editor/editorManager";
-import {ConnectionBinder, IShareLocalToRemote, RemoteFileListener} from "./listeners";
+import { EditorManager, IEditorManager } from "./editor/editorManager";
+import { ConnectionBinder, IShareLocalToRemote, RemoteFileListener } from "./listeners";
 
 
 export class FileStore {
@@ -22,7 +22,11 @@ export class FileStore {
         if (!this.sharedFiles.has(filenameKey)) {
             return null;
         }
-        return this.sharedFiles.get(filenameKey)!;
+        const sharedFile = this.sharedFiles.get(filenameKey);
+        if (!sharedFile) {
+            return null;
+        }
+        return sharedFile;
     }
 
     saveFile(peerFile: SharedPeerFile) {
@@ -32,14 +36,18 @@ export class FileStore {
         this.sharedFiles.set(peerFile.filenameKey, peerFile);
     }
 
+    removeFile(fileKey: string) {
+        this.sharedFiles.delete(fileKey);
+    }
+
 }
 
 export class SharedPeerFile {
     constructor(public readonly filenameKey: string,
-                public readonly textDocument: vscode.TextDocument,
-                public readonly documentBinding: DocumentBinding,
-                public readonly editorChannel: EditorChannel,
-                public readonly editorBinding: EditorBinding
+        public readonly textDocument: vscode.TextDocument,
+        public readonly documentBinding: DocumentBinding,
+        public readonly editorChannel: EditorChannel,
+        public readonly editorBinding: EditorBinding
     ) {
     }
 }
@@ -94,4 +102,32 @@ export default class FileShareManager implements IShareLocalToRemote, RemoteFile
         await this.createAndSaveSharedFile(fileKey, localUri, editorChannel);
     }
 
+    deleteFile(uri: vscode.Uri) {
+        console.log("FileShareManager deleteFile:" + uri.fsPath);
+        const fileKey = getFileKeyFromUri(uri);
+        const sharedFile = this.fileStore.getSharedFile(fileKey);
+        if (!sharedFile) {
+            console.warn("FileShareManager deleteFile: shared file is not exists for key: " + fileKey);
+            return;
+        }
+        this.connBinder.removeFile(fileKey);
+        this.fileStore.removeFile(fileKey);
+    }
+
+    onDeleteRemoteFile(filename: string): void {
+        console.log("FileShareManager onDeleteRemoteFile:" + filename);
+        const sharedFile = this.fileStore.getSharedFile(filename);
+        if (!sharedFile) {
+            console.warn("FileShareManager onDeleteRemoteFile: shared file is not exists for key: " + filename);
+            return;
+        }
+        this.fileStore.removeFile(filename);
+        this.fileSystem.deleteFile(this.fileSystem.getFileUri(filename));
+    }
+
+    async deleteDirectory(file: vscode.Uri): Promise<void> {
+        (await getAllFiles(file.fsPath)).forEach(f => {
+            this.fileSystem.deleteFile(f);
+        });
+    }
 }

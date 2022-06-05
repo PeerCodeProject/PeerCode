@@ -28,7 +28,6 @@ export default class EditorBinding implements EditorChannelListener {
     }
 
     onSelectionsChangedForPeer(peername: string, selections: Selection[], fileKey: string): Promise<void> {
-        console.log(this.constructor.name + ": onSelectionsChangedForPeer- peerId:" + peername + ", selections size:" + selections.length);
         const selectionRanges: vscode.Range[] = [];
         const cursorRanges: vscode.Range[] = [];
 

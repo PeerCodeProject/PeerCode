@@ -1,6 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
-import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as path from 'path';
+import * as vscode from 'vscode';
 
 export class FileSystemManager {
     private static intastance: FileSystemManager | null = null;
@@ -36,6 +36,11 @@ export class FileSystemManager {
         return vscode.Uri.file(pathToFile);
     }
 
+    public deleteFile(file: vscode.Uri) {
+        const pathToFile = file.fsPath;
+        fs.unlinkSync(pathToFile);
+    }
+
 }
 
 export function makeDirSync(dir: string) {
@@ -46,7 +51,7 @@ export function makeDirSync(dir: string) {
     return true;
 }
 
-export  function  makeFileSync(filename: string) {
+export function makeFileSync(filename: string) {
     if (fs.existsSync(filename)) {
         return false;
     }

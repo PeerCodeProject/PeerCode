@@ -52,7 +52,12 @@ export class DockerService {
     public listenToDockerRun(provider: Observable<string>, session:Sess) {
         provider.on("runDocker", async (args: string[]) => {
             console.log("run docker remotely");
-            await this.runDockerLocallyAndShare(getWorkspacePath()!, session);
+            const wsPath = getWorkspacePath();
+            if (!wsPath) {
+                console.error("open workspace!");
+                return;
+            }
+            await this.runDockerLocallyAndShare(wsPath, session);
         });
     }
 }

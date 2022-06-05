@@ -1,4 +1,4 @@
-import * as Dockerode from "dockerode"; 
+import * as Dockerode from "dockerode";
 import { EventEmitter } from 'events';
 import * as fs from "fs";
 import { makeFileSync } from "../core/fs/fileSystemManager";
@@ -31,7 +31,7 @@ export class DockerRunner {
     }
 
     // run image with imagename 
-    async run(imageName: string) : Promise<Dockerode.Container>{
+    async run(imageName: string): Promise<Dockerode.Container> {
         const container = await this.createContainer(imageName);
         console.log(container);
 
@@ -83,7 +83,7 @@ function writeLogFile(stream: NodeJS.ReadableStream, fileName: string) {
     const writeStream = fs.createWriteStream(fileName, { flags: 'a' });
     // stream.pipe(writeStream);
     stream.on('data', function (chunk: Buffer) {
-            writeStream.write(chunk);
+        writeStream.write(chunk);
     });
 
     stream.on('end', () => {
