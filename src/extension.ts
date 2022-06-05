@@ -10,6 +10,7 @@ import { initGlobal } from "./utils";
 import { SessionTreeNode } from "./ui/tree/treeNodes";
 import { ApplicationFacade } from './facade';
 import { DockerService } from "./runner/dockerService";
+import { WebRtcTerminalProfileProvider } from "./terminal/terminal";
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -58,6 +59,7 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 		vscode.commands.registerCommand("peercode.sharePort", async (session: SessionTreeNode) => {
 			await facade.sharePort(session.session);
 		}),
+		vscode.Terminal
 	];
 
 	context.subscriptions.push(...disposables);
@@ -76,7 +78,7 @@ function init(context: vscode.ExtensionContext) {
 	sessionManager.registerListener(treeProvider);
 
 	vscode.window.registerTreeDataProvider("peercode.session", treeProvider);
-
+	vscode.window.registerTerminalProfileProvider("peercode.terminal", new WebRtcTerminalProfileProvider());
 	registerCommands(context, facade, workspacePath);
 
 }

@@ -2,7 +2,7 @@
   "name": "peercode",
   "displayName": "PeerCode",
   "description": "Realtime Collaborative Code Editor for vscode",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -66,6 +66,14 @@
         }
       }
     ],
+    "terminal": {
+      "profiles": [
+        {
+          "id": "peercode.terminal",
+          "title": "PeerCode Terminal"
+        }
+      ]
+    },
     "views": {
       "explorer": [
         {
@@ -153,6 +161,7 @@
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.9",
     "@peculiar/webcrypto": "^1.4.0",
+    "@types/golang-wasm-exec": "^1.15.0",
     "@vscode/webview-ui-toolkit": "^1.0.0",
     "bufferutil": "^4.0.6",
     "buildcheck": "^0.0.4",
