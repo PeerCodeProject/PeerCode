@@ -70,7 +70,7 @@ export default class DocumentBinding implements DocumentChannelListener {
             while (!await this.update(edit)) {
                 console.warn("tryApplyChanges: retrying");
             }
-            console.warn("sucess Appling Changes");
+            console.info("success Appling Changes");
         } catch (err) {
             console.error("error", err);
         }
