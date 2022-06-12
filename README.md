@@ -3,8 +3,9 @@
 Realtime Collaborative Code Editor extension for vscode
 
 Extension is based on [CRDT`s](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type)
-concrete implementation [YJS](https://github.com/yjs/yjs)
-extension uses p2p via webRTC
+concrete implementation [YJS](https://github.com/yjs/yjs).
+
+For peer to peer connection is used webRTC
 
 ![example](docs/example1.gif)
 
@@ -23,5 +24,4 @@ create and join room:
 
 Video:
 
-https://raw.githubusercontent.com/PeerCodeProject/PeerCode/main/docs/peercode1.mp4
-
+<https://raw.githubusercontent.com/PeerCodeProject/PeerCode/main/docs/peercode1.mp4>
