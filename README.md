@@ -20,3 +20,8 @@ extension uses p2p via webRTC
 
 create and join room:
 ![Join](docs/start.gif)
+
+Video:
+
+https://raw.githubusercontent.com/PeerCodeProject/PeerCode/main/docs/peercode1.mp4
+
