@@ -2,7 +2,7 @@
   "name": "peercode",
   "displayName": "PeerCode",
   "description": "Realtime Collaborative Code Editor for vscode",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.67.0"
   },

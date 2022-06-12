@@ -17,7 +17,8 @@
                 "format": [
                     "camelCase",
                     "PascalCase"
-                ]
+                ],
+                "leadingUnderscore": "allow"
             },
             { 
                 "selector": "variable",
@@ -38,8 +39,7 @@
                 "format": [
                     "camelCase",
                     "PascalCase"
-                ],
-                "leadingUnderscore": "allow"
+                ]
             }
         ],
         "@typescript-eslint/no-floating-promises": "warn",
