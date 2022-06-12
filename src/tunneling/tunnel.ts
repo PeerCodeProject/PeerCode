@@ -29,13 +29,16 @@ export function tunnelClient(provider: Observable<string>) {
     provider.on("sharePort", (port: number) => {
         console.log("remote port is opened on: " + port);
         const server = http.createServer(serverHandler);
-        server.listen(0, () => {
+        server.listen(0, async () => {
             const address = server.address();
             if (address) {
                 if (typeof address === "string") {
-                    vscode.window.showInformationMessage("Tunnel opened on: " + address);
+                    await vscode.window.showInformationMessage("Tunnel opened on: " + address);
                 } else {
-                    vscode.window.showInformationMessage("Tunnel opened on: http://localhost:" + address.port);
+                    await vscode.window.showInformationMessage<string>("Tunnel opened on: http://localhost:" + address.port, "Open")
+                        .then(async (_result) => {
+                            await vscode.env.openExternal(vscode.Uri.parse("http://localhost:" + address.port));
+                        });
                 }
             }
             console.log(`http CLIENT TUNNEL running at: ${JSON.stringify(server.address())}`);

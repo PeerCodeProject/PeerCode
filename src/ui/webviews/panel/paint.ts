@@ -25,7 +25,10 @@ export class DrawingPanel {
                 vscode.ViewColumn.One,
                 {
                     enableScripts: true,
-                    retainContextWhenHidden: true
+                    retainContextWhenHidden: true,
+                    localResourceRoots: [
+                        vscode.Uri.joinPath(extensionUri, "webview-ui"),
+                    ]
                 }
             );
 
@@ -68,7 +71,7 @@ export class DrawingPanel {
             "@vscode",
             "webview-ui-toolkit",
             "dist",
-            "toolkit.js", 
+            "toolkit.js",
         ]);
         const perfectFreeHandLib = getUri(webview, extensionUri, [
             "node_modules",
