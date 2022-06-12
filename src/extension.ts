@@ -54,7 +54,7 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 		vscode.commands.registerCommand("peercode.runDocker", async (session: SessionTreeNode) => {
 			await facade.runDocker(session.session, workspacePath);
 		}),
-		
+
 		vscode.commands.registerCommand("peercode.sharePort", async (session: SessionTreeNode) => {
 			await facade.sharePort(session.session);
 		}),
