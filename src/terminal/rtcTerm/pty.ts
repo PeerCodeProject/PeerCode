@@ -7,7 +7,7 @@ const exec = promisify(cpExec);
 const formatText = (text: string) => `\r${text.split(/(\r?\n)/g).join("\r")}\r`;
 
 // Settings
-const defaultLine = "→ ";
+const defaultLine = "\x1b[31m→ \x1b[0m";
 const keys = {
     enter: "\r",
     backspace: "\x7f",
@@ -35,7 +35,6 @@ abstract class AbstractPseudoTerminal implements vscode.Pseudoterminal {
 
 
     open(initialDimensions: vscode.TerminalDimensions | undefined): void {
-        // + "\x1b[31mHello1 world\x1b[0m"/
         this.writeEmitter.fire(this.content);
     }
 

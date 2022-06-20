@@ -2,7 +2,7 @@
   "name": "peercode",
   "displayName": "PeerCode",
   "description": "Realtime Collaborative Code Editor for vscode",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -147,11 +147,11 @@
     "@types/vscode": "^1.67.0",
     "@types/webrtc": "^0.0.32",
     "@types/ws": "^8.5.3",
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
-    "@vscode/test-electron": "^2.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.28.0",
+    "@typescript-eslint/parser": "^5.28.0",
+    "@vscode/test-electron": "^2.1.4",
     "cross-env": "^7.0.3",
-    "eslint": "^8.17.0",
+    "eslint": "^8.18.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
     "node-loader": "^2.0.0",
@@ -159,7 +159,7 @@
     "perfect-freehand": "^1.1.0",
     "supports-color": "^9.2.2",
     "ts-loader": "^9.3.0",
-    "typescript": "^4.7.3",
+    "typescript": "^4.7.4",
     "vsce": "^2.9.1",
     "webpack": "^5.73.0",
     "webpack-cli": "^4.9.2"
@@ -170,13 +170,13 @@
     "@vscode/webview-ui-toolkit": "^1.0.0",
     "bufferutil": "^4.0.6",
     "buildcheck": "^0.0.4",
-    "dockerode": "^3.3.1",
+    "dockerode": "^3.3.2",
     "dotenv": "^16.0.1",
     "events": "^3.3.0",
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "nan": "^2.16.0",
-    "node-fetch": "^3.2.5",
+    "node-fetch": "^3.2.6",
     "node-gyp": "^9.0.0",
     "node-pre-gyp": "^0.13.0",
     "npmlog": "^6.0.2",
@@ -189,8 +189,8 @@
     "utf-8-validate": "^5.0.9",
     "uuid": "^8.3.2",
     "wrtc": "^0.4.7",
-    "ws": "^8.7.0",
+    "ws": "^8.8.0",
     "y-websocket": "^1.4.3",
-    "yjs": "^13.5.38"
+    "yjs": "^13.5.39"
   }
 }
