@@ -4,11 +4,11 @@ import {IConfig} from "../../../config";
 
 export class DrawingPanel {
     public static currentPanel: DrawingPanel | undefined;
-    private _disposables: vscode.Disposable[] = [];
+    private disposables: vscode.Disposable[] = [];
 
     private constructor(private readonly  panel: vscode.WebviewPanel, extensionUri: vscode.Uri,
                         private readonly config: IConfig, private roomname: string, private username: string) {
-        this.panel.onDidDispose(this.dispose, null, this._disposables);
+        this.panel.onDidDispose(this.dispose, null, this.disposables);
         this.panel.webview.html = this.getWebviewContent(
             this.panel.webview,
             extensionUri
@@ -41,8 +41,8 @@ export class DrawingPanel {
 
         this.panel.dispose();
 
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
+        while (this.disposables.length) {
+            const disposable = this.disposables.pop();
             if (disposable) {
                 disposable.dispose();
             }

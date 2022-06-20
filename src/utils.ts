@@ -1,4 +1,5 @@
 import { Uri, Webview } from "vscode";
+import * as os from "os";
 
 const globalTemp: typeof globalThis = global;
 
@@ -6,6 +7,10 @@ export function initGlobal() {
     globalTemp.WebSocket = require("ws");
     // process.env['LOG'] = '*';
 
+}
+
+export function isWindows() {
+    return os.platform() === "win32";
 }
 
 export async function input(inputter: () => Promise<string | undefined | null>) {

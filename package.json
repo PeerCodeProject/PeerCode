@@ -64,6 +64,15 @@
           "light": "media/light/addPort.svg",
           "dark": "media/dark/addPort.svg"
         }
+      },
+      {
+        "command": "peercode.shareTerminal",
+        "title": "share terminal",
+        "category": "PeerCode",
+        "icon": {
+          "light": "media/light/terminal.svg",
+          "dark": "media/dark/terminal.svg"
+        }
       }
     ],
     "views": {
@@ -98,6 +107,11 @@
         },
         {
           "command": "peercode.sharePort",
+          "when": "view == peercode.session && viewItem == session",
+          "group": "inline"
+        },
+        {
+          "command": "peercode.shareTerminal",
           "when": "view == peercode.session && viewItem == session",
           "group": "inline"
         }

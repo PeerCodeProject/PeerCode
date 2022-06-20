@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { FileSystemManager, getAllFiles, getFileKeyFromUri, getWorkspacePath } from '../fs/fileSystemManager';
+import { FileSystemManager, getAllFiles, getFileKeyFromUri } from '../fs/fileSystemManager';
 import DocumentBinding from "./document/documentBinding";
 import { DocumentManager, IDocumentManager } from "./document/documentManager";
 import { EditorChannel } from "./editor/editorChannel";

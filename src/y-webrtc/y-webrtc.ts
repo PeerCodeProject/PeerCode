@@ -1,3 +1,4 @@
+// Original source code is at -> https://github.com/yjs/y-webrtc
 import * as ws from "lib0/websocket";
 import * as map from "lib0/map";
 import * as error from "lib0/error";
@@ -19,17 +20,22 @@ import * as awarenessProtocol from "y-protocols/awareness";
 import { Awareness } from "y-protocols/awareness";
 import * as cryptoutils from "./crypto";
 import { CryptoKey } from "@peculiar/webcrypto";
+import { ICE_SERVERS } from "./wrtc-const";
 
 const log = logging.createModuleLogger("y-webrtc");
-
-const messageSync = 0;
-const messageQueryAwareness = 3;
-const messageAwareness = 1;
-const messageBcPeerId = 4;
-const messageTunneledRequest = 5;
-const messageTunneledResponse = 6;
-const messageSharePort = 7;
-const messageRunDocker = 8;
+const messageTypes = {
+  Sync: 0,
+  QueryAwareness: 3,
+  Awareness: 1,
+  BcPeerId: 4,
+  TunneledRequest: 5,
+  TunneledResponse: 6,
+  SharePort: 7,
+  RunDocker: 8,
+  TerminalOutData: 9,
+  StartPeerTerminal: 10,
+  TerminalCommand: 11,
+};
 
 const signalingConns = new Map<string, SignalingConn>();
 
@@ -63,28 +69,43 @@ const readMessage = async (room: Room, buf: Uint8Array, syncedCallback: CallBack
   const doc = room.doc;
   let sendReply = false;
   switch (messageType) {
-    case messageTunneledRequest: {
+    case messageTypes.TunneledRequest: {
       console.log("messageTunneledRequest");
       room.provider.emit("tunneledClientRequest", [decoding.readVarString(decoder)]);
       break;
     }
-    case messageTunneledResponse: {
+    case messageTypes.TunneledResponse: {
       console.log("messageTunneledResponse");
       room.provider.emit("tunneledServerResponse", [decoding.readVarString(decoder)]);
       break;
     }
-    case messageSharePort: {
+    case messageTypes.SharePort: {
       console.log("messageSharePort");
       room.provider.emit("sharePort", [decoding.readUint16(decoder)]);
       break;
     }
-    case messageRunDocker: {
+    case messageTypes.RunDocker: {
       console.log("messageRunDocker");
       room.provider.emit("runDocker", [decoding.readVarString(decoder)]);
       break;
     }
-    case messageSync: {
-      encoding.writeVarUint(encoder, messageSync);
+    case messageTypes.TerminalOutData: {
+      console.log("messageTerminalOutData");
+      room.provider.emit("TerminalOutPut", [decoding.readVarString(decoder)]);
+      break;
+    }
+    case messageTypes.StartPeerTerminal: {
+      console.log("messageStartPeerTerminal");
+      room.provider.emit("RemotePeerTerminal", [decoding.readVarString(decoder)]);
+      break;
+    }
+    case messageTypes.TerminalCommand: {
+      console.log("messageTerminalCommand");
+      room.provider.emit("peerTerminalCommand", [decoding.readVarString(decoder)]);
+      break;
+    }
+    case messageTypes.Sync: {
+      encoding.writeVarUint(encoder, messageTypes.Sync);
       const syncMessageType = syncProtocol.readSyncMessage(
         decoder,
         encoder,
@@ -102,8 +123,8 @@ const readMessage = async (room: Room, buf: Uint8Array, syncedCallback: CallBack
       }
       break;
     }
-    case messageQueryAwareness:
-      encoding.writeVarUint(encoder, messageAwareness);
+    case messageTypes.QueryAwareness:
+      encoding.writeVarUint(encoder, messageTypes.Awareness);
       encoding.writeVarUint8Array(
         encoder,
         awarenessProtocol.encodeAwarenessUpdate(
@@ -113,14 +134,14 @@ const readMessage = async (room: Room, buf: Uint8Array, syncedCallback: CallBack
       );
       sendReply = true;
       break;
-    case messageAwareness:
+    case messageTypes.Awareness:
       awarenessProtocol.applyAwarenessUpdate(
         awareness,
         decoding.readVarUint8Array(decoder),
         room
       );
       break;
-    case messageBcPeerId: {
+    case messageTypes.BcPeerId: {
       const add = decoding.readUint8(decoder) === 1;
       const peerName = decoding.readVarString(decoder);
       if (
@@ -254,13 +275,13 @@ export class WebrtcConn {
       const doc = room.provider.doc;
       const awareness = room.awareness;
       let encoder = encoding.createEncoder();
-      encoding.writeVarUint(encoder, messageSync);
+      encoding.writeVarUint(encoder, messageTypes.Sync);
       syncProtocol.writeSyncStep1(encoder, doc);
       sendWebrtcConn(this, encoder);
       const awarenessStates = awareness.getStates();
       if (awarenessStates.size > 0) {
         encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, messageAwareness);
+        encoding.writeVarUint(encoder, messageTypes.Awareness);
         encoding.writeVarUint8Array(
           encoder,
           awarenessProtocol.encodeAwarenessUpdate(
@@ -340,12 +361,19 @@ const broadcastBcPeerId = async (room: Room) => {
   if (room.provider.filterBcConns) {
     // broadcast peerId via broadcastchannel
     const encoderPeerIdBc = encoding.createEncoder();
-    encoding.writeVarUint(encoderPeerIdBc, messageBcPeerId);
+    encoding.writeVarUint(encoderPeerIdBc, messageTypes.BcPeerId);
     encoding.writeUint8(encoderPeerIdBc, 1);
     encoding.writeVarString(encoderPeerIdBc, room.peerId);
     await broadcastBcMessage(room, encoding.toUint8Array(encoderPeerIdBc));
   }
 };
+
+function broadcastStringData(data: string, messageCode: number, originThis: Room) {
+  const encoder = encoding.createEncoder();
+  encoding.writeVarUint(encoder, messageCode);
+  encoding.writeVarString(encoder, data);
+  broadcastWebrtcConn(originThis, encoding.toUint8Array(encoder));
+}
 
 export class Room {
   peerId: string;
@@ -374,35 +402,37 @@ export class Room {
 
     this.provider.on("clientRequest", async (data: string) => {
       console.log("clientRequest", data);
-      const encoder = encoding.createEncoder();
-      encoding.writeVarUint(encoder, messageTunneledRequest);
-      encoding.writeVarString(encoder, data);
-      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+      broadcastStringData(data, messageTypes.TunneledRequest, this);
     });
 
     this.provider.on("serverResponse", async (data: string) => {
       console.log("serverResponse", data);
-      const encoder = encoding.createEncoder();
-      encoding.writeVarUint(encoder, messageTunneledResponse);
-      encoding.writeVarString(encoder, data);
-
-      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+      broadcastStringData(data, messageTypes.TunneledResponse, this);
     });
 
     this.provider.on("startSharingPort", async (data: number) => {
       console.log("startSharingPort", data);
       const encoder = encoding.createEncoder();
-      encoding.writeVarUint(encoder, messageSharePort);
+      encoding.writeVarUint(encoder, messageTypes.SharePort);
       encoding.writeUint16(encoder, data);
       broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
     });
 
     this.provider.on("runDockerRemote", async (data: string) => {
       console.log("runDockerRemote", data);
-      const encoder = encoding.createEncoder();
-      encoding.writeVarUint(encoder, messageRunDocker);
-      encoding.writeVarString(encoder, data);
-      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
+      broadcastStringData(data, messageTypes.RunDocker, this);
+    });
+    this.provider.on("terminalOutData", async (data: string) => {
+      console.log("terminalOutData", data);
+      broadcastStringData(data, messageTypes.TerminalOutData, this);
+    });
+    this.provider.on("startPeerTerminal", async (data: string) => {
+      console.log("startPeerTerminal", data);
+      broadcastStringData(data, messageTypes.StartPeerTerminal, this);
+    });
+    this.provider.on("terminalCommand", async (data: string) => {
+      console.log("terminalCommand", data);
+      broadcastStringData(data, messageTypes.TerminalCommand, this);
     });
 
     process.on("exit", this.beforeUnloadHandler);
@@ -419,21 +449,21 @@ export class Room {
     await broadcastBcPeerId(this);
     // write sync step 1
     const encoderSync = encoding.createEncoder();
-    encoding.writeVarUint(encoderSync, messageSync);
+    encoding.writeVarUint(encoderSync, messageTypes.Sync);
     syncProtocol.writeSyncStep1(encoderSync, this.doc);
     await broadcastBcMessage(this, encoding.toUint8Array(encoderSync));
     // broadcast local state
     const encoderState = encoding.createEncoder();
-    encoding.writeVarUint(encoderState, messageSync);
+    encoding.writeVarUint(encoderState, messageTypes.Sync);
     syncProtocol.writeSyncStep2(encoderState, this.doc);
     await broadcastBcMessage(this, encoding.toUint8Array(encoderState));
     // write queryAwareness
     const encoderAwarenessQuery = encoding.createEncoder();
-    encoding.writeVarUint(encoderAwarenessQuery, messageQueryAwareness);
+    encoding.writeVarUint(encoderAwarenessQuery, messageTypes.QueryAwareness);
     await broadcastBcMessage(this, encoding.toUint8Array(encoderAwarenessQuery));
     // broadcast local awareness state
     const encoderAwarenessState = encoding.createEncoder();
-    encoding.writeVarUint(encoderAwarenessState, messageAwareness);
+    encoding.writeVarUint(encoderAwarenessState, messageTypes.Awareness);
     encoding.writeVarUint8Array(
       encoderAwarenessState,
       awarenessProtocol.encodeAwarenessUpdate(this.awareness, [
@@ -457,7 +487,7 @@ export class Room {
     );
     // broadcast peerId removal via broadcastchannel
     const encoderPeerIdBc = encoding.createEncoder();
-    encoding.writeVarUint(encoderPeerIdBc, messageBcPeerId);
+    encoding.writeVarUint(encoderPeerIdBc, messageTypes.BcPeerId);
     encoding.writeUint8(encoderPeerIdBc, 0); // remove peerId from other bc peers
     encoding.writeVarString(encoderPeerIdBc, this.peerId);
     await broadcastBcMessage(this, encoding.toUint8Array(encoderPeerIdBc));
@@ -493,7 +523,7 @@ export class Room {
   */
   private async docUpdateHandler(update: Uint8Array) {
     const encoder = encoding.createEncoder();
-    encoding.writeVarUint(encoder, messageSync);
+    encoding.writeVarUint(encoder, messageTypes.Sync);
     syncProtocol.writeUpdate(encoder, update);
     await broadcastRoomMessage(this, encoding.toUint8Array(encoder));
   }
@@ -502,10 +532,10 @@ export class Room {
    * Listens to Awareness updates and sends them to remote peers
    *
    */
-  private awarenessUpdateHandler = async ({ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number>}) => {
+  private awarenessUpdateHandler = async ({ added, updated, removed }: { added: Array<number>; updated: Array<number>; removed: Array<number> }) => {
     const changedClients = added.concat(updated).concat(removed);
     const encoderAwareness = encoding.createEncoder();
-    encoding.writeVarUint(encoderAwareness, messageAwareness);
+    encoding.writeVarUint(encoderAwareness, messageTypes.Awareness);
     encoding.writeVarUint8Array(
       encoderAwareness,
       awarenessProtocol.encodeAwarenessUpdate(this.awareness, changedClients)
@@ -744,43 +774,3 @@ export class WebrtcProvider extends Observable<string> {
   }
 }
 
-
-const ICE_SERVERS: RTCIceServer[] =
-  [
-    {
-      urls: [
-        'stun:stun.l.google.com:19302',
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-        'stun:stun3.l.google.com:19302',
-        'stun:stun4.l.google.com:19302',
-        'stun:global.stun.twilio.com:3478'
-      ],
-
-    },
-    {
-      urls: 'turn:numb.viagenie.ca',
-      credential: 'muazkh',
-      username: 'webrtc@live.com'
-    },
-    {
-      urls: 'turn:192.158.29.39:3478?transport=udp',
-      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-      username: '28224511:1379330808'
-    },
-    {
-      urls: 'turn:192.158.29.39:3478?transport=tcp',
-      credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-      username: '28224511:1379330808'
-    },
-    {
-      urls: 'turn:turn.bistri.com:80',
-      credential: 'homeo',
-      username: 'homeo'
-    },
-    {
-      urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
-      credential: 'webrtc',
-      username: 'webrtc'
-    }
-  ];
