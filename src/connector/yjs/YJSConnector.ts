@@ -6,6 +6,8 @@ import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
 import { ConnAuthInfo, IConnection, IConnector } from '../conn';
 import { RTCProvider, SocketProvider } from './provider';
 import { YjsConnection } from './YJSConnection';
+import { getWorkspacePath } from '../../core/fs/fileSystemManager';
+import { RegisterRemotePeerTerminalListener } from '../../terminal/rtcTerm/terminal';
 
 export abstract class YjsConnector implements IConnector {
     supportsPassword(): boolean {
@@ -67,7 +69,7 @@ export class YWebRTCConnector extends YjsConnector {
         await this.awaitConnection(provider);
 
         tunnelClient(provider);
-
+        RegisterRemotePeerTerminalListener(provider, getWorkspacePath()!);
         return new YjsConnection(new RTCProvider(provider), ydoc, authInfo.username, authInfo.room, isOwner);
 
     }

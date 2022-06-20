@@ -58,6 +58,9 @@ function registerCommands(context: vscode.ExtensionContext, facade: ApplicationF
 		vscode.commands.registerCommand("peercode.sharePort", async (session: SessionTreeNode) => {
 			await facade.sharePort(session.session);
 		}),
+		vscode.commands.registerCommand("peercode.shareTerminal", async (session: SessionTreeNode) => {
+			await facade.shareTerminal(session.session, workspacePath? workspacePath : "/");
+		}),
 	];
 
 	context.subscriptions.push(...disposables);

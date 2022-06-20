@@ -5,6 +5,7 @@ import { FileSharer } from './core/fs/fileSharer';
 import { DockerService } from './runner/dockerService';
 import { Sess } from './session/sess';
 import { SessManager } from './session/sessManager';
+import { shareTerminalWithPeers } from './terminal/rtcTerm/terminal';
 import { tunnelServer } from './tunneling/tunnel';
 import { DrawingPanel } from './ui/webviews/panel/paint';
 import { input } from './utils';
@@ -58,6 +59,10 @@ export class ApplicationFacade {
         }
         const port = await getPortToShare();
         tunnelServer(session.provider.getPorvider(), port);
+    }
+
+    async shareTerminal(session: Sess, workspacePath: string) {
+        shareTerminalWithPeers(session.provider.getPorvider(), workspacePath);
     }
 }
 
