@@ -1,24 +1,22 @@
 import * as http from 'http';
 import stream = require('stream');
 
-import fetch, {RequestInit, Response} from "node-fetch";
-import {Observable} from 'lib0/observable';
+import fetch, { RequestInit, Response } from "node-fetch";
+import { Observable } from 'lib0/observable';
 import * as vscode from 'vscode';
 
 export function tunnelClient(provider: Observable<string>) {
 
-    const serverHandler = async (req: http.IncomingMessage, res: http.ServerResponse) => {
+    const serverHandler = async (req: http.IncomingMessage, res: http.ServerResponse, port: number) => {
         const content = await getContent(req);
         const requ = getRequestObject(content, req);
         const request = JSON.stringify(requ);
 
-        provider.emit("clientRequest", [request]);
+        provider.emit("clientRequest", [port, request]);
 
         const responseHandler = (data1: string) => {
             try {
                 console.log("responseHandler:" + data1);
-                provider.off("tunneledServerResponse", responseHandler);
-                // let dataVal = null;
                 const resp = JSON.parse(data1);
 
                 resp.headers = resp.headers || {};
@@ -39,12 +37,19 @@ export function tunnelClient(provider: Observable<string>) {
             res.end();
         };
 
-        provider.on("tunneledServerResponse", responseHandler);
+        provider.on("tunneledServerResponse", (reqPort: number, data: string) => {
+            if (port !== reqPort) {
+                return;
+            }
+            responseHandler(data);
+        });
     };
 
     provider.on("sharePort", (port: number) => {
         console.log("remote port is opened on: " + port);
-        const server = http.createServer(serverHandler);
+        const server = http.createServer(async (req, res) => {
+            await serverHandler(req, res, port);
+        });
         server.listen(0, async () => {
             const address = server.address();
             if (address) {
@@ -67,7 +72,10 @@ export function tunnelClient(provider: Observable<string>) {
 export function tunnelServer(provider: Observable<string>, port: number) {
     provider.emit("startSharingPort", [port]);
 
-    const handleTunneledRequestData = async (data1: string) => {
+    const handleTunneledRequestData = async (reqPort: number, data1: string) => {
+        if (port !== reqPort) {
+            return;
+        }
         try {
 
             const data = JSON.parse(data1);
@@ -87,7 +95,7 @@ export function tunnelServer(provider: Observable<string>, port: number) {
             const contentData = await getContentData(res);
             console.log("contentData: " + contentData);
 
-            provider.emit("serverResponse", [JSON.stringify({
+            provider.emit("serverResponse", [port, JSON.stringify({
                 ok: res.ok,
                 status: res.status,
                 statusText: res.statusText,
@@ -99,7 +107,7 @@ export function tunnelServer(provider: Observable<string>, port: number) {
 
         } catch (error) {
             if (error instanceof Error) {
-                provider.emit("serverResponse", [JSON.stringify({
+                provider.emit("serverResponse", [port, JSON.stringify({
                     ok: false,
                     status: 500,
                     statusText: "Internal Server Error",

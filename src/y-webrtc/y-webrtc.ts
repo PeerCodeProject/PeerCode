@@ -71,12 +71,16 @@ const readMessage = async (room: Room, buf: Uint8Array, syncedCallback: CallBack
   switch (messageType) {
     case messageTypes.TunneledRequest: {
       console.log("messageTunneledRequest");
-      room.provider.emit("tunneledClientRequest", [decoding.readVarString(decoder)]);
+      const port = decoding.readUint16(decoder);
+      const data = decoding.readVarString(decoder);
+      room.provider.emit("tunneledClientRequest", [port, data]);
       break;
     }
     case messageTypes.TunneledResponse: {
       console.log("messageTunneledResponse");
-      room.provider.emit("tunneledServerResponse", [decoding.readVarString(decoder)]);
+      const port = decoding.readUint16(decoder);
+      const data = decoding.readVarString(decoder);
+      room.provider.emit("tunneledServerResponse", [port, data]);
       break;
     }
     case messageTypes.SharePort: {
@@ -400,14 +404,22 @@ export class Room {
     this.bcconnected = false;
     this.bcSubscriber = this.bcSubscriber.bind(this);
 
-    this.provider.on("clientRequest", async (data: string) => {
-      console.log("clientRequest", data);
-      broadcastStringData(data, messageTypes.TunneledRequest, this);
+    this.provider.on("clientRequest", async (port: number, data: string) => {
+      console.log("clientRequest", port, data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageTypes.TunneledRequest);
+      encoding.writeUint16(encoder, port);
+      encoding.writeVarString(encoder, data);
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
     });
 
-    this.provider.on("serverResponse", async (data: string) => {
-      console.log("serverResponse", data);
-      broadcastStringData(data, messageTypes.TunneledResponse, this);
+    this.provider.on("serverResponse", async (port: number, data: string) => {
+      console.log("serverResponse", port, data);
+      const encoder = encoding.createEncoder();
+      encoding.writeVarUint(encoder, messageTypes.TunneledResponse);
+      encoding.writeUint16(encoder, port);
+      encoding.writeVarString(encoder, data);
+      broadcastWebrtcConn(this, encoding.toUint8Array(encoder));
     });
 
     this.provider.on("startSharingPort", async (data: number) => {
