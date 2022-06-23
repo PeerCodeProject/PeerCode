@@ -12,3 +12,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 docs/**
+.devcontainer/**
+.github/**
+scripts/wrtc_backup/**
