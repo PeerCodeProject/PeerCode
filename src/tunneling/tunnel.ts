@@ -131,14 +131,6 @@ async function getContentData(res: Response) {
         res.text();
 }
 
-function shouldGetBytes(headers: Headers) {
-    const contentType = headers.get("Content-Type");
-    if (contentType === undefined || contentType === null) {
-        return false;
-    }
-    return contentType.includes("image");
-}
-
 function getRequestObject(content: unknown, req: http.IncomingMessage) {
     let requ;
     if (content !== null) {
@@ -181,16 +173,40 @@ function getContent(readable: stream.Readable) {
 
 }
 
+function shouldGetBytes(headers: Headers) {
+    const contentRanges = headers.get("Content-Ranges");
+    if (contentRanges && contentRanges.includes("bytes")) {
+        return true;
+    }
+
+    const contentType = headers.get("Content-Type");
+    if (contentType === undefined || contentType === null) {
+        return false;
+    }
+
+    return contentType.startsWith("image") || contentType.startsWith("video");
+}
+
+
 function getData(resp: any): string | Buffer {
     if (resp.data === undefined || resp.data === null) {
         return "";
     }
+    const ranges = resp.headers["content-ranges"];
+    if (ranges !== undefined && ranges !== null) {
+        const range = ranges[0];
+        if (range !== undefined && range !== null && range.includes("bytes")) {
+            return Buffer.from(resp.data, "base64");
+        }
+    }
+
+
     const contentType = resp.headers["content-type"] || resp.headers["Content-Type"];
     if (contentType === undefined || contentType === null) {
         return resp.data;
     }
 
-    if (contentType[0].includes("image")) {
+    if (contentType[0].includes("image") || contentType[0].includes("video")) {
         return Buffer.from(resp.data, "base64");
     }
     return resp.data;
