@@ -3,6 +3,7 @@
 import { getStroke } from "https://esm.sh/perfect-freehand@1.0.16";
 import * as Y from "https://esm.sh/yjs@13.5.38";
 import { WebrtcProvider } from "https://esm.sh/y-webrtc@10.2.3";
+import { uint53 } from "https://esm.sh/lib0/random";
 
 console.log(window.username);
 console.log(window.roomname);
@@ -114,6 +115,7 @@ ystrokes.observe((event) => {
         "http://www.w3.org/2000/svg",
         "path"
       );
+      svgPath.setAttribute("data-ystroke-id", ystroke.get("uuid"));
       svgPath.setAttribute("d", getSvgStrokeFromYStroke(ystroke));
       svgPath.setAttribute("fill", ystroke.get("color"));
       svg.appendChild(svgPath);
@@ -127,10 +129,28 @@ ystrokes.observe((event) => {
       });
     });
   });
+  let alreadyCleaned = false;
+  event.changes.deleted.forEach((item) => {
+    if (alreadyCleaned) {
+      return;
+    }
+    svg.querySelectorAll("path").forEach((path) => path.remove());
+    alreadyCleaned = true;
+    // item.content.getContent().forEach((ystroke) => {
+    //   ystroke.unobserve();
+    //   svg.querySelectorAll("path").forEach((path) => {
+    //     if (path.getAttribute("data-ystroke-id") === ystroke.get("uuid")) {
+    //       svg.removeChild(path);
+    //     }
+    //   });
+    // });
+  });
+
 });
 
+
 /**
- * @type {Y.Map<> | null}
+ * @type {Y.Map<Y.Array> | null}
  */
 let currentStroke = null;
 
@@ -138,6 +158,7 @@ svg.addEventListener("pointerdown", (event) => {
   console.log("pointerdown", event);
   currentStroke = new Y.Map();
   currentStroke.set("color", choosenColor);
+  currentStroke.set("uuid", uint53());
   const currentPath = new Y.Array();
   currentPath.push([[event.x, event.y, event.pressure]]);
   currentStroke.set("path", currentPath);
@@ -157,10 +178,16 @@ svg.addEventListener("pointermove", (event) => {
 const clearButton = document.getElementById("clear-canvas");
 
 clearButton.addEventListener("click", () => {
-  ystrokes.clear();
 
-  svg.querySelectorAll("path").forEach((circle) => circle.remove());
+  ydoc.transact(() => {
+    ystrokes.forEach((element) => {
+      ystrokes.delete(element);
+    });
+  });
+
+  // svg.querySelectorAll("path").forEach((path) => path.remove());
 });
+
 
 window.Y = Y;
 window.svg = svg;
