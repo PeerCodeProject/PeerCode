@@ -13,18 +13,21 @@ For peer to peer connection is used webRTC
 
 * Share code with other peers
 * Edit code in realtime
-* Run code based on Dockerfile in project directory
 * Share ideas with collaborative paint
 * Open ports for other peers and transfer date via p2p connection
 * Share terminal with other peers
+* Run code based on Dockerfile in project directory
+  * if Dockerfile contains EXPOSE $PORT, then the port will be automatically shared with other peers
 
-for better performance - auto save for changes should be on
-
-![example](docs/example.png)
+For better performance: Auto Save for changes should be on
 
 create and join room:
 ![Join](docs/start.gif)
 
-Video:
+## Architecture
+
+![arch](docs/arch.png)
+
+## Video-demo
 
 <https://raw.githubusercontent.com/PeerCodeProject/PeerCode/main/docs/peercode1.mp4>

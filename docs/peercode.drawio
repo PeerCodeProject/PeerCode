@@ -1,0 +1,99 @@
+<mxfile host="65bd71144e">
+    <diagram id="Ht1M8jgEwFfnCIfOTk4-" name="Page-1">
+        <mxGraphModel dx="484" dy="499" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-3" value="" style="sketch=0;aspect=fixed;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#00188D;shape=mxgraph.mscae.enterprise.application_server" parent="1" vertex="1">
+                    <mxGeometry x="525" y="250" width="43" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-5" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#505050;shape=mxgraph.mscae.intune.company_portal" parent="1" vertex="1">
+                    <mxGeometry x="315" y="420" width="50" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-12" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="vwmqPSV8uhTP2pzoNHLu-6" target="vwmqPSV8uhTP2pzoNHLu-7" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="vwmqPSV8uhTP2pzoNHLu-6" target="6W5eKpbAy4shnJdx7X16-5" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-6" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#505050;shape=mxgraph.mscae.intune.company_portal" parent="1" vertex="1">
+                    <mxGeometry x="315" y="420" width="50" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-7" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#505050;shape=mxgraph.mscae.intune.company_portal" parent="1" vertex="1">
+                    <mxGeometry x="715" y="420" width="50" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="vwmqPSV8uhTP2pzoNHLu-10" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Docker.svg;" parent="1" vertex="1">
+                    <mxGeometry x="321.7" y="520" width="36.59" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="6W5eKpbAy4shnJdx7X16-1" value="Host Peer" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="394" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="6W5eKpbAy4shnJdx7X16-2" value="Peer" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="429" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="6W5eKpbAy4shnJdx7X16-4" value="Signaling server" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="495" y="230" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="6W5eKpbAy4shnJdx7X16-5" value="local docker service" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="500" width="120" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-3" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.7;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="vwmqPSV8uhTP2pzoNHLu-6" target="vwmqPSV8uhTP2pzoNHLu-7" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="500" y="180" as="sourcePoint"/>
+                        <mxPoint x="550" y="130" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="540" y="160"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-4" value="STUN(TURN)" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.traditional_server;" parent="1" vertex="1">
+                    <mxGeometry x="510" y="70" width="60" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-5" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;align=center;fillColor=#505050;shape=mxgraph.mscae.intune.company_portal" parent="1" vertex="1">
+                    <mxGeometry x="525" y="570" width="50" height="38" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-6" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.01;entryY=0.98;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.99;exitY=0.98;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="vwmqPSV8uhTP2pzoNHLu-6" target="vwmqPSV8uhTP2pzoNHLu-7" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="460" y="510" as="sourcePoint"/>
+                        <mxPoint x="618" y="540" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="550" y="570"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-7" value="Peer" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="608" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-9" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="vwmqPSV8uhTP2pzoNHLu-3" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="365" y="419.13" as="sourcePoint"/>
+                        <mxPoint x="465" y="419.13" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-10" value="SDP Offer" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="IBH7BugRt1_LGsTLdOMp-9" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-15" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.01;exitY=0.02;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.99;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="vwmqPSV8uhTP2pzoNHLu-7" target="vwmqPSV8uhTP2pzoNHLu-3" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="568" y="370" as="sourcePoint"/>
+                        <mxPoint x="668" y="370" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-16" value="SDP Answer" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="IBH7BugRt1_LGsTLdOMp-15" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-20" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0.99;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="548.25" y="570" as="sourcePoint"/>
+                        <mxPoint x="544.7499999999998" y="299.5" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="IBH7BugRt1_LGsTLdOMp-21" value="SDP Answer" style="edgeLabel;resizable=0;html=1;align=center;verticalAlign=middle;" parent="IBH7BugRt1_LGsTLdOMp-20" connectable="0" vertex="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-2" y="-44" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

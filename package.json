@@ -2,7 +2,7 @@
   "name": "peercode",
   "displayName": "PeerCode",
   "description": "Realtime Collaborative Code Editor for vscode",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -19,7 +19,11 @@
     "Collaboration",
     "Sharing",
     "Remote",
-    "WebRTC"
+    "WebRTC",
+    "Paint",
+    "Terminal",
+    "Docker",
+    "YJS"
   ],
   "icon": "media/icon.png",
   "activationEvents": [
