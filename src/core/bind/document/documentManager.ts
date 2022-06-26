@@ -44,13 +44,13 @@ export class DocumentManager implements IDocumentManager {
     }
 
     private onCreateFiles(event: vscode.FileCreateEvent) {
-        event.files.forEach(file => {
+        event.files.forEach(async file => {
             console.log("Handling create file event: " + file.fsPath);
             // if file is directory skip 
             if (fs.lstatSync(file.fsPath).isDirectory()) {
                 return;
             }
-            this.sharer.shareFile(file);
+            await this.sharer.shareFile(file);
         });
     }
 
@@ -68,19 +68,25 @@ export class DocumentManager implements IDocumentManager {
 
 
     initializeTextToRemote(document: vscode.TextDocument) {
-        const changeEvent = {
-            document: document,
-            contentChanges: [
-                {
-                    range: new vscode.Range(new vscode.Position(0, 0),
-                        new vscode.Position(0, 0)),
-                    rangeOffset: 0,
-                    rangeLength: 0,
-                    text: document.getText()
-                }
-            ],
-            reason: undefined
-        };
-        this.onChangeTextDocument(changeEvent);
+        try {
+            const initialText = document.getText();
+            const changeEvent = {
+                document: document,
+                contentChanges: [
+                    {
+                        range: new vscode.Range(new vscode.Position(0, 0),
+                            new vscode.Position(0, 0)),
+                        rangeOffset: 0,
+                        rangeLength: 0,
+                        text: initialText
+                    }
+                ],
+                reason: undefined
+            };
+            this.onChangeTextDocument(changeEvent);
+        } catch (error) {
+            console.error("initializeTextToRemote: error: " + error);
+            return;
+        }
     }
 }

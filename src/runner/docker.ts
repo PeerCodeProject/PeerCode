@@ -2,6 +2,10 @@ import * as Dockerode from "dockerode";
 import { EventEmitter } from 'events';
 import * as fs from "fs";
 import { makeFileSync } from "../core/fs/fileSystemManager";
+import { ListContains } from "../utils";
+import * as path from 'path';
+
+const Dockerfile = "Dockerfile";
 
 // get all filenames with realtive path in directory
 export function getAllFiles(directory: string): string[] {
@@ -17,23 +21,32 @@ const promisifyStream = (stream: EventEmitter) => new Promise((resolve, reject) 
 export class DockerRunner {
     readonly docker = new Dockerode();
 
-    // build image with docker file 
+    // build image with docker file
     async buildFromDockerfile(contextpath: string, imageName: string) {
+        const files = getAllFiles(contextpath);
+
+        if (!ListContains(files, Dockerfile)) {
+            throw new Error("Dockerfile not found in contextpath");
+        }
+
+        const portsList = getPortsToExport(path.join(contextpath, Dockerfile));
+
         const options: Dockerode.ImageBuildOptions = {
             t: imageName,
         };
         const context = {
             context: contextpath,
-            src: getAllFiles(contextpath)
+            src: files
         };
         const stream = await this.docker.buildImage(context, options);
         await promisifyStream(stream);
+        return portsList;
     }
 
-    // run image with imagename 
-    async run(imageName: string): Promise<Dockerode.Container> {
-        const container = await this.createContainer(imageName);
-        console.log(container);
+    // run image with imagename
+    async run(imageName: string, ports: string[]): Promise<Dockerode.Container> {
+        const container = await this.createContainer(imageName, ports);
+        console.log(container.id);
 
         // const startOptions = { hijack: true }; // deprecated
         const startRes = await container.start();
@@ -42,7 +55,12 @@ export class DockerRunner {
     }
 
     public async saveLogs(container: Dockerode.Container, logsFilename: string) {
-        const logs = await this.getContainerLogStream(container);
+
+        if (makeFileSync(logsFilename)) {
+            console.log("making new file");
+        }
+
+        const logs = await DockerRunner.getContainerLogStream(container);
 
         writeLogFile(logs, logsFilename);
 
@@ -50,7 +68,7 @@ export class DockerRunner {
         return logs;
     }
 
-    private async getContainerLogStream(container: Dockerode.Container) {
+    private static async getContainerLogStream(container: Dockerode.Container) {
         const containerLogsOpts = {
             follow: true,
             stdout: true,
@@ -59,7 +77,9 @@ export class DockerRunner {
         return container.logs(containerLogsOpts);
     }
 
-    private async createContainer(imageName: string) {
+    private async createContainer(imageName: string, ports: string[]) {
+        const exposedPorts = getExposedPorts(ports);
+        const portBindings = getPortBindings(ports);
         const createContainerOptions: Dockerode.ContainerCreateOptions = {
             Image: imageName,
             AttachStderr: true,
@@ -67,7 +87,11 @@ export class DockerRunner {
             AttachStdin: false,
             Tty: true,
             OpenStdin: false,
-            StdinOnce: false
+            StdinOnce: false,
+            ExposedPorts: exposedPorts,
+            HostConfig: {
+                PortBindings: portBindings,
+            }
         };
         return this.docker.createContainer(createContainerOptions);
     }
@@ -75,10 +99,6 @@ export class DockerRunner {
 
 function writeLogFile(stream: NodeJS.ReadableStream, fileName: string) {
     console.log("writing to LOG file:", fileName);
-
-    if (makeFileSync(fileName)) {
-        console.log("makeing new file");
-    }
 
     const writeStream = fs.createWriteStream(fileName, { flags: 'a' });
     // stream.pipe(writeStream);
@@ -102,3 +122,38 @@ function convertStrToBuffer(str: string) {
     // convert string to Buffer
     return Buffer.from(str, "utf-8");
 }
+
+function getPortsToExport(dockerfile: string) {
+    const ports: string[] = [];
+    const lines = fs.readFileSync(dockerfile).toString().split("\n");
+    lines.forEach(line => {
+        if (line.startsWith("EXPOSE")) {
+            const port = line.split(" ")[1].trim();
+            ports.push(port);
+        }
+    }
+    );
+    return ports;
+}
+
+function getPortBindings(ports: string[]): any {
+    const portBindings: any = {};
+    ports.forEach(port => {
+        portBindings[port] = [{ HostPort: port }];
+    }
+    );
+    return portBindings;
+}
+
+function getExposedPorts(ports: string[]): { [port: string]: any; } | undefined {
+    if (ports.length === 0) {
+        return undefined;
+    }
+    const exposedPorts: { [port: string]: any } = {};
+    ports.forEach(port => {
+        exposedPorts[port] = {};
+    }
+    );
+    return exposedPorts;
+}
+

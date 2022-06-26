@@ -9,6 +9,10 @@ export function initGlobal() {
 
 }
 
+export function ListContains<T>(list: T[], item: T) {
+    return list.some(listItem => listItem === item);
+}
+
 export function isWindows() {
     return os.platform() === "win32";
 }

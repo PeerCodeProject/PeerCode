@@ -5,6 +5,14 @@ import fetch, { RequestInit, Response } from "node-fetch";
 import { Observable } from 'lib0/observable';
 import * as vscode from 'vscode';
 
+export class DockerPortListener {
+    constructor(private provider: Observable<string>) {
+    }
+    public sharePort(port: string) {
+        tunnelServer(this.provider, +port);
+    }
+}
+
 export function tunnelClient(provider: Observable<string>) {
 
     const serverHandler = async (req: http.IncomingMessage, res: http.ServerResponse, port: number) => {
@@ -93,7 +101,7 @@ export function tunnelServer(provider: Observable<string>, port: number) {
             console.log(`Local response ${JSON.stringify(res, null, 2)}`);
 
             const contentData = await getContentData(res);
-            console.log("contentData: " + contentData);
+            // console.log("contentData: " + contentData);
 
             provider.emit("serverResponse", [port, JSON.stringify({
                 ok: res.ok,

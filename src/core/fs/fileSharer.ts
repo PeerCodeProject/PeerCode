@@ -16,12 +16,16 @@ export class FileSharer {
         const files = await getAllFiles(this.workspacePath);
         console.log("files to Share: " + files);
         for (const file of files) {
-            sess.shareLocalFile(file);
+            try {
+                await sess.shareLocalFile(file);
+            } catch (error) {
+                console.log("error sharing file: " + file);                
+            }
         }
     }
 
-    shareFile(sess: Sess, filePath: vscode.Uri) {
-        sess.shareLocalFile(filePath);
+    async shareFile(sess: Sess, filePath: vscode.Uri) {
+        await sess.shareLocalFile(filePath);
     }
 }
 

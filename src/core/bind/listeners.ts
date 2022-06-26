@@ -13,7 +13,7 @@ export interface RemoteFileListener {
 
 export interface IShareLocalToRemote {
     deleteDirectory(file: vscode.Uri): Promise<void>;
-    shareFile(uri: vscode.Uri): void;
+    shareFile(uri: vscode.Uri): Promise<void>;
     deleteFile(uri: vscode.Uri): void;
 }
 

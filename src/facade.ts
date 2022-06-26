@@ -6,7 +6,7 @@ import { DockerService } from './runner/dockerService';
 import { Sess } from './session/sess';
 import { SessManager } from './session/sessManager';
 import { shareTerminalWithPeers } from './terminal/rtcTerm/terminal';
-import { tunnelServer } from './tunneling/tunnel';
+import { DockerPortListener, tunnelServer } from './tunneling/tunnel';
 import { DrawingPanel } from './ui/webviews/panel/paint';
 import { input } from './utils';
 
@@ -26,6 +26,7 @@ export class ApplicationFacade {
         }
         const sess = await this.sessionManager.createSession(this.dockerService, true);
         await this.fileSharer.shareWorkspace(sess);
+        this.dockerService.registerListener(new DockerPortListener(sess.provider.getPorvider()));
     }
 
     async joinSession() {
