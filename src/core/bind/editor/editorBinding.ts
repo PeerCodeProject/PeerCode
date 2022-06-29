@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import {Selection} from "../../dataStructs";
-import {getFileKeyFromUri} from "../../fs/fileSystemManager";
-import {EditorChannel} from "./editorChannel";
-import {getPosition, getRandomColor, getVSCodePosition, isCursor} from "../textUtil";
+import { Position, Selection } from "../../dataStructs";
+import { getFileKeyFromUri } from "../../fs/fileSystemManager";
+import { EditorChannel } from "./editorChannel";
+import { getPosition, getRandomColor, getVSCodePosition, isCursor } from "../textUtil";
 
 
 export interface EditorChannelListener {
@@ -12,8 +12,10 @@ export interface EditorChannelListener {
 
 class UserDecorator {
     constructor(public selectionDecoration: vscode.TextEditorDecorationType,
-        public cursorDecoration: vscode.TextEditorDecorationType) {
+        public cursorDecoration: vscode.TextEditorDecorationType,
+        public nameDecoration: vscode.TextEditorDecorationType) {
     }
+
 }
 class UserDecoratorStore {
     private static instance: UserDecoratorStore;
@@ -37,9 +39,22 @@ class UserDecoratorStore {
         });
         const cursorDecoration = vscode.window.createTextEditorDecorationType({
             border: "solid " + color,
-            borderWidth: "6px 1px 6px 1px"
+            borderWidth: "7px 1px 7px 1px",
         });
-        decor = new UserDecorator(selectionDecoration, cursorDecoration);
+
+        const nameDecoration = vscode.window.createTextEditorDecorationType({
+            after: {
+                contentText: peer,
+                color: "rgba(0, 0, 0, 1)",
+                fontWeight: "bold",
+                backgroundColor: color,
+                fontStyle: "italic",
+                margin: `0 0 0 -${peer.length}ch`,
+                width: `${peer.length}ch; position:absoulute; z-index:99;`,
+            },
+        });
+
+        decor = new UserDecorator(selectionDecoration, cursorDecoration, nameDecoration);
         this.colorMap.set(peer, decor);
         return decor;
     }
@@ -56,6 +71,7 @@ export default class EditorBinding implements EditorChannelListener {
     onSelectionsChangedForPeer(peername: string, selections: Selection[], fileKey: string): Promise<void> {
         const selectionRanges: vscode.Range[] = [];
         const cursorRanges: vscode.Range[] = [];
+        const nameRanges: vscode.Range[] = [];
 
         for (const selection of selections) {
             if (selection.isCursor) {
@@ -69,12 +85,18 @@ export default class EditorBinding implements EditorChannelListener {
                         getVSCodePosition(selection.start),
                         getVSCodePosition(selection.end)));
             }
+            nameRanges.push(
+                new vscode.Range(
+                    getVSCodePosition(new Position(selection.end.row + 1, selection.end.column)),
+                    getVSCodePosition(new Position(selection.end.row + 1, selection.end.column))));
         }
+
         for (const editor of vscode.window.visibleTextEditors) {
             if (getFileKeyFromUri(editor.document.uri) === fileKey) {
                 const decor = this.selectionColorStore.getColor(peername);
                 editor.setDecorations(decor.selectionDecoration, selectionRanges);
                 editor.setDecorations(decor.cursorDecoration, cursorRanges);
+                editor.setDecorations(decor.nameDecoration, nameRanges);
                 return Promise.resolve();
             }
         }
