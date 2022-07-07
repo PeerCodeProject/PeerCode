@@ -33,9 +33,9 @@ export function deactivate() {
 function registerCommands(context: vscode.ExtensionContext, facade: ApplicationFacade, workspacePath: string | null) {
 
 	const disposables = [
-		vscode.commands.registerCommand("peercode.StartSession", async () => {
+		vscode.commands.registerCommand("peercode.NewSession", async () => {
 			await facade.startSession().catch(async err => {
-				console.log("Error in StartSession", err);
+				console.log("Error in NewSession", err);
 				await vscode.window.showErrorMessage(err.message);
 			});
 		}),

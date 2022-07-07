@@ -9,7 +9,6 @@ import { Observable } from "lib0/observable";
 import * as logging from "lib0/logging";
 import * as bc from "lib0/broadcastchannel";
 import * as buffer from "lib0/buffer";
-import * as math from "lib0/math";
 import { createMutex } from "lib0/mutex";
 
 import * as Y from "yjs";
@@ -36,6 +35,8 @@ const messageTypes = {
   StartPeerTerminal: 10,
   TerminalCommand: 11,
 };
+
+const MAX_CONNECTIONS = 20;
 
 const signalingConns = new Map<string, SignalingConn>();
 
@@ -716,7 +717,7 @@ export class WebrtcProvider extends Observable<string> {
     this.awareness = new awarenessProtocol.Awareness(doc);
     this.shouldConnect = false;
     this.signalingConns = [];
-    this.maxConns = 20 + math.floor(random.rand() * 15);
+    this.maxConns = MAX_CONNECTIONS;
     this.peerOpts = {
       wrtc: require("wrtc"),
       config: {
