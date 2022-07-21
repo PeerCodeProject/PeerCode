@@ -14,7 +14,7 @@ For peer to peer connection is used webRTC
 * Share code with other peers
 * Edit code in realtime
 * Share ideas with collaborative paint
-* Open ports for other peers and transfer date via p2p connection
+* Open ports for other peers and transfer data via p2p connection
 * Share terminal with other peers
 * Run code based on Dockerfile in project directory
   * if Dockerfile contains EXPOSE $PORT, then the port will be automatically shared with other peers
