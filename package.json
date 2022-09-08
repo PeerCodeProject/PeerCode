@@ -180,7 +180,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^8.0.3",
     "nan": "^2.16.0",
-    "node-fetch": "^3.2.6",
+    "node-fetch": "^3.2.10",
     "node-gyp": "^9.0.0",
     "node-pre-gyp": "^0.13.0",
     "npmlog": "^6.0.2",
