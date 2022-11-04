@@ -159,7 +159,7 @@
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
     "node-loader": "^2.0.0",
-    "nodemon": "^2.0.18",
+    "nodemon": "^2.0.20",
     "perfect-freehand": "^1.1.0",
     "supports-color": "^9.2.2",
     "ts-loader": "^9.3.1",
