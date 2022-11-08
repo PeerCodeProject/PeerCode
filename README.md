@@ -31,3 +31,7 @@ create and join room:
 ## Video-demo
 
 <https://raw.githubusercontent.com/PeerCodeProject/PeerCode/main/docs/peercode1.mp4>
+
+## Contact
+
+Hello. Thanks for this great contribution to the community. We're evaluating to use it in our project and it would be nice if I could contact you for my possible questions and contributions. If you prefer, you can contact me at cemeliguzel@gmail.com. Looking forward to hearing from you. Thanks in advance.
