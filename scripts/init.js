@@ -8,6 +8,7 @@ const DEBUG_WRTC_FOLDER = path.join(
     __dirname,
     "..",
     "node_modules",
+    "@cubicleai",
     "wrtc",
     "build",
     "Debug"
@@ -16,6 +17,7 @@ const RELEASE_WRTC_FOLDER = path.join(
     __dirname,
     "..",
     "node_modules",
+    "@cubicleai",
     "wrtc",
     "build",
     "Release"

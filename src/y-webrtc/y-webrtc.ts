@@ -719,7 +719,7 @@ export class WebrtcProvider extends Observable<string> {
     this.signalingConns = [];
     this.maxConns = MAX_CONNECTIONS;
     this.peerOpts = {
-      wrtc: require("wrtc"),
+      wrtc: require("@cubicleai/wrtc"),
       config: {
         iceServers: ICE_SERVERS
       }

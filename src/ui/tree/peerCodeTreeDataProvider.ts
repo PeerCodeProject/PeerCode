@@ -9,25 +9,25 @@ type EmmitedEventType = void | TreeNode | TreeNode[] | null | undefined;
 export class PeerCodeSessionTreeDataProvider implements vscode.TreeDataProvider<TreeNode>,
     SessionListener, PeerConnectionListener {
 
-    private _onDidChangeTreeData: vscode.EventEmitter<EmmitedEventType> = new vscode.EventEmitter<EmmitedEventType>();
+    private onDidChangeTreeDataEventEmitter: vscode.EventEmitter<EmmitedEventType> = new vscode.EventEmitter<EmmitedEventType>();
 
     constructor(private manager: SessManager) { }
     onPeerAdded(peer: Peer): void {
-        this._onDidChangeTreeData.fire();
+        this.onDidChangeTreeDataEventEmitter.fire();
     }
     onPeerRemoved(peer: Peer): void {
-        this._onDidChangeTreeData.fire();
+        this.onDidChangeTreeDataEventEmitter.fire();
     }
     onAddSession(session: Sess): void {
         session.getPeerManager().registerListener(this);
-        this._onDidChangeTreeData.fire();
+        this.onDidChangeTreeDataEventEmitter.fire();
     }
     onRemoveSession(session: Sess): void {
-        this._onDidChangeTreeData.fire();
+        this.onDidChangeTreeDataEventEmitter.fire();
     }
 
 
-    onDidChangeTreeData: vscode.Event<EmmitedEventType> = this._onDidChangeTreeData.event;
+    onDidChangeTreeData: vscode.Event<EmmitedEventType> = this.onDidChangeTreeDataEventEmitter.event;
 
     getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
         return element;

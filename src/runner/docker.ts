@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as Dockerode from "dockerode";
 import { EventEmitter } from 'events';
 import * as fs from "fs";
@@ -68,12 +69,13 @@ export class DockerRunner {
         return logs;
     }
 
-    private static async getContainerLogStream(container: Dockerode.Container) {
+    private static async getContainerLogStream(container: Dockerode.Container): Promise<NodeJS.ReadableStream> {
         const containerLogsOpts = {
             follow: true,
             stdout: true,
             stderr: true
         };
+        // @ts-ignore
         return container.logs(containerLogsOpts);
     }
 

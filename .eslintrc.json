@@ -62,6 +62,7 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "ignorePatterns": [
+        "node_modules",
         "out",
         "dist",
         "**/*.d.ts"
