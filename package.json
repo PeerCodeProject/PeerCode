@@ -139,7 +139,8 @@
     "init-dev": "node ./scripts/wrtc_backup/init-dev.js",
     "vsce-package": "vsce package",
     "deploy": "vsce publish",
-    "pre-release": "vsce publish --pre-release"
+    "pre-release": "vsce publish --pre-release",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.23",
@@ -172,8 +173,7 @@
     "ts-loader": "^9.5.1",
     "typescript": "^4.7.4",
     "webpack": "^5.90.1",
-    "webpack-cli": "^5.1.4",
-    "vscode": "*"
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.11",
@@ -190,6 +190,7 @@
     "nan": "^2.18.0",
     "node-fetch": "^3.3.2",
     "npmlog": "^7.0.1",
+    "patch-package": "^8.0.0",
     "path": "^0.12.7",
     "semver": "^7.6.0",
     "simple-peer": "^9.11.1",
