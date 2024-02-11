@@ -1,13 +1,14 @@
 import * as http from 'http';
 import stream = require('stream');
 
-import fetch, { RequestInit, Response, Headers } from "node-fetch";
-import { Observable } from 'lib0/observable';
+import fetch, {RequestInit, Response, Headers} from "node-fetch";
+import {Observable} from 'lib0/observable';
 import * as vscode from 'vscode';
 
 export class DockerPortListener {
     constructor(private provider: Observable<string>) {
     }
+
     public sharePort(port: string) {
         tunnelServer(this.provider, +port);
     }
@@ -17,15 +18,16 @@ export function tunnelClient(provider: Observable<string>) {
 
     const serverHandler = async (req: http.IncomingMessage, res: http.ServerResponse, port: number) => {
         const content = await getContent(req);
-        const requ = getRequestObject(content, req);
-        const request = JSON.stringify(requ);
+        // TODO: this wont work for binary data
+        const requestObject = getRequestObject(content, req);
+        const requestString = JSON.stringify(requestObject);
 
-        provider.emit("clientRequest", [port, request]);
+        provider.emit("clientRequest", [port, requestString]);
 
-        const responseHandler = (data1: string) => {
+        const responseHandler = (dataStr: string) => {
             try {
-                console.log("responseHandler:" + data1);
-                const resp = JSON.parse(data1);
+                console.log("responseHandler:" + dataStr);
+                const resp = JSON.parse(dataStr);
 
                 resp.headers = resp.headers || {};
                 const data = getData(resp);
@@ -140,27 +142,24 @@ async function getContentData(res: Response) {
 }
 
 function getRequestObject(content: unknown, req: http.IncomingMessage) {
-    let requ;
     if (content !== null) {
-        requ = {
+        return {
             method: req.method,
             headers: req.headers,
             url: req.url,
             data: content
         };
-    } else {
-        requ = {
-            method: req.method,
-            headers: req.headers,
-            url: req.url,
-        };
     }
-    return requ;
+    return {
+        method: req.method,
+        headers: req.headers,
+        url: req.url,
+    };
 }
 
 
-function getContent(readable: stream.Readable) {
-    const chunks: any[] = [];
+function getContent(readable: stream.Readable): Promise<string | Buffer | null> {
+    const chunks: object[] = [];
     readable.on('readable', () => {
         let chunk;
         while (null !== (chunk = readable.read())) {

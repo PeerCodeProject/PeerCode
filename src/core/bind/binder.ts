@@ -9,8 +9,8 @@ import { YjsConstants } from "./constants";
 
 
 export class YjsBinder extends BaseObservable<RemoteFileListener> implements ConnectionBinder {
-    private peers: Y.Map<any>;
-    private currentFiles = new Y.Map<Y.Map<any>>();
+    private peers: Y.Map<Y.Map<Y.Map<unknown>>>;
+    private currentFiles = new Y.Map<Y.Map<unknown>>();
     private editorChannelsForPeer = new Map<string, Map<string, EditorChannel>>();
 
     constructor(public doc: Y.Doc,
@@ -34,7 +34,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         this.registerListener(fileShareManager);
     }
 
-    private peerEventListener(event: Y.YMapEvent<Y.Map<Y.Map<any>>>, transaction: Y.Transaction) {
+    private peerEventListener(event: Y.YMapEvent<Y.Map<Y.Map<unknown>>>, transaction: Y.Transaction) {
         if (transaction.origin === this.currentPeer) {
             return;
         }
@@ -52,7 +52,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         });
     }
 
-    addPeer(peer: string, files: Y.Map<Y.Map<any>>) {
+    addPeer(peer: string, files: Y.Map<Y.Map<unknown>>) {
 
         console.debug("Adding peer " + peer);
         if (peer === this.currentPeer) {
@@ -67,8 +67,8 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         this.peerConnListener.peerJoined(new Peer(peer));
     }
 
-    addObserverForFileList(peer: string, files: Y.Map<Y.Map<any>>) {
-        const fileChangeListener = (event: Y.YMapEvent<Y.Map<any>>, transaction: Y.Transaction) => {
+    addObserverForFileList(peer: string, files: Y.Map<Y.Map<unknown>>) {
+        const fileChangeListener = (event: Y.YMapEvent<Y.Map<unknown>>, transaction: Y.Transaction) => {
             if (transaction.origin === this.currentPeer) {
                 return;
             }
@@ -78,7 +78,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
         files.observe(fileChangeListener);
     }
 
-    private onFilesChanged(peer: string, event: Y.YMapEvent<Y.Map<any>>) {
+    private onFilesChanged(peer: string, event: Y.YMapEvent<Y.Map<unknown>>) {
         event.changes.keys.forEach((key, filename) => {
             switch (key.action) {
                 case "add":
@@ -118,7 +118,7 @@ export class YjsBinder extends BaseObservable<RemoteFileListener> implements Con
 
     }
 
-    addPeerFile(peer: string, filename: string, file: Y.Map<any>) {
+    addPeerFile(peer: string, filename: string, file: Y.Map<unknown>) {
         console.debug("Adding Peer file " + filename + ", From " + peer);
         const remoteFile = new RemoteFileWrapper(file);
         console.log("remote file name:" + remoteFile.filename);

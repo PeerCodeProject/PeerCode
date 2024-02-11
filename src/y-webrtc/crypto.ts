@@ -49,7 +49,11 @@ export const encrypt = async (data: Uint8Array, key: CryptoKey | null): Promise<
     return encoding.toUint8Array(encryptedDataEncoder);
 };
 
-export const encryptJson = (data: Uint8Array, key: CryptoKey | null): PromiseLike<Uint8Array> => {
+export type EncryptTypes =  undefined | null | number | bigint | boolean | string | {
+    [x: string]: any;
+} | Array<any> | Uint8Array;
+
+export const encryptJson = (data: EncryptTypes, key: CryptoKey | null): PromiseLike<Uint8Array> => {
     const dataEncoder = encoding.createEncoder();
     encoding.writeAny(dataEncoder, data);
     return encrypt(encoding.toUint8Array(dataEncoder), key);

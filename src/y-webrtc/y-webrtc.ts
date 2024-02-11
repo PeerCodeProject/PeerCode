@@ -579,13 +579,13 @@ const openRoom = (doc: Y.Doc, provider: WebrtcProvider, name: string, key: Crypt
   return room;
 };
 
-const publishSignalingMessage = async (conn: SignalingConn, room: Room, data: any) => {
+const publishSignalingMessage = async (conn: SignalingConn, room: Room, data: unknown) => {
   if (room.key) {
-    await cryptoutils.encryptJson(data, room.key).then((data1) => {
+    await cryptoutils.encryptJson(data as cryptoutils.EncryptTypes, room.key).then((encryptJson) => {
       conn.send({
         type: "publish",
         topic: room.name,
-        data: buffer.toBase64(data1),
+        data: buffer.toBase64(encryptJson),
       });
     });
   } else {
@@ -610,6 +610,10 @@ export class SignalingConn extends ws.WebsocketClient {
       );
     });
     this.on("message", async (m: any) => {
+    if (typeof m !== "object" || m === null) {
+        console.warn("unexpected message", m);
+        return;
+    }
       switch (m.type) {
         case "publish": {
           // console.log("on message publish", JSON.stringify(m));

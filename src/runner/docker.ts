@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as Dockerode from "dockerode";
-import { EventEmitter } from 'events';
+import {EventEmitter} from 'events';
 import * as fs from "fs";
-import { makeFileSync } from "../core/fs/fileSystemManager";
-import { ListContains } from "../utils";
+import {makeFileSync} from "../core/fs/fileSystemManager";
+import {ListContains} from "../utils";
 import * as path from 'path';
 
 const Dockerfile = "Dockerfile";
@@ -102,7 +102,7 @@ export class DockerRunner {
 function writeLogFile(stream: NodeJS.ReadableStream, fileName: string) {
     console.log("writing to LOG file:", fileName);
 
-    const writeStream = fs.createWriteStream(fileName, { flags: 'a' });
+    const writeStream = fs.createWriteStream(fileName, {flags: 'a'});
     // stream.pipe(writeStream);
     stream.on('data', function (chunk: Buffer) {
         writeStream.write(chunk);
@@ -129,32 +129,34 @@ function getPortsToExport(dockerfile: string) {
     const ports: string[] = [];
     const lines = fs.readFileSync(dockerfile).toString().split("\n");
     lines.forEach(line => {
-        if (line.startsWith("EXPOSE")) {
-            const port = line.split(" ")[1].trim();
-            ports.push(port);
+            if (line.startsWith("EXPOSE")) {
+                const port = line.split(" ")[1].trim();
+                ports.push(port);
+            }
         }
-    }
     );
     return ports;
 }
 
-function getPortBindings(ports: string[]): any {
-    const portBindings: any = {};
+type PortBindings = { [port: string]: { HostPort: string }[] };
+
+function getPortBindings(ports: string[]): PortBindings {
+    const portBindings: PortBindings = {};
     ports.forEach(port => {
-        portBindings[port] = [{ HostPort: port }];
-    }
+            portBindings[port] = [{HostPort: port}];
+        }
     );
     return portBindings;
 }
 
-function getExposedPorts(ports: string[]): { [port: string]: any; } | undefined {
+function getExposedPorts(ports: string[]): { [port: string]: object; } | undefined {
     if (ports.length === 0) {
         return undefined;
     }
-    const exposedPorts: { [port: string]: any } = {};
+    const exposedPorts: { [port: string]: object } = {};
     ports.forEach(port => {
-        exposedPorts[port] = {};
-    }
+            exposedPorts[port] = {};
+        }
     );
     return exposedPorts;
 }
