@@ -1,8 +1,8 @@
 /* eslint-env browser */
 
-import { getStroke } from "https://esm.sh/perfect-freehand@1.0.16";
-import * as Y from "https://esm.sh/yjs@13.5.38";
-import { WebrtcProvider } from "https://esm.sh/y-webrtc@10.2.3";
+import { getStroke } from "https://esm.sh/perfect-freehand@1.2.0";
+import * as Y from "https://esm.sh/yjs@13.6.12";
+import { WebrtcProvider } from "https://esm.sh/y-webrtc@10.3.0";
 import { uint53 } from "https://esm.sh/lib0/random";
 
 console.log(window.username);

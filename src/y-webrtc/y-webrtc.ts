@@ -20,6 +20,7 @@ import { Awareness } from "y-protocols/awareness";
 import * as cryptoutils from "./crypto";
 import { CryptoKey } from "@peculiar/webcrypto";
 import { ICE_SERVERS } from "./wrtc-const";
+import * as wrtc  from "@roamhq/wrtc";
 
 const log = logging.createModuleLogger("y-webrtc");
 const messageTypes = {
@@ -723,7 +724,7 @@ export class WebrtcProvider extends Observable<string> {
     this.signalingConns = [];
     this.maxConns = MAX_CONNECTIONS;
     this.peerOpts = {
-      wrtc: require("@roamhq/wrtc"),
+      wrtc: wrtc,
       config: {
         iceServers: ICE_SERVERS
       }

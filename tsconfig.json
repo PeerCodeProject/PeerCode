@@ -11,14 +11,13 @@
 		"extendedDiagnostics": true,
 		// "explainFiles":true,
 
-		"forceConsistentCasingInFileNames":true,
+		"forceConsistentCasingInFileNames": true,
 		/* Additional Checks */
 		"noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
 		"noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 		// "noUnusedLocals": true,                /* Report errors on unused locals. */
-		
-		"skipLibCheck": false,  
+		"skipLibCheck": false,
 		"strict": true,                        /* Enable all strict type-checking options. */
 		"alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
 	},
