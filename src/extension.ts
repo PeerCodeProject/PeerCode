@@ -13,14 +13,9 @@ import { DockerService } from "./runner/dockerService";
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   console.log('"peercode" is now active!');
-
-  console.log("absolutePath", context.asAbsolutePath("bla"));
-  // console.log("extensionPath", context.extensionPath);
-  // console.log("extensionUri", context.extensionUri);
-
   initGlobal();
   init(context);
-  console.log("peercode eneded activation");
+  console.log("peercode ended activation");
 }
 
 export function deactivate(): void {
