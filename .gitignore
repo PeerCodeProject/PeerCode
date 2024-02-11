@@ -5,3 +5,4 @@ node_modules
 *.vsix
 .idea
 scripts/wrtc_backup/**/
+.DS_Store

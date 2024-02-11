@@ -1,7 +1,7 @@
 import * as http from 'http';
 import stream = require('stream');
 
-import fetch, { RequestInit, Response } from "node-fetch";
+import fetch, { RequestInit, Response, Headers } from "node-fetch";
 import { Observable } from 'lib0/observable';
 import * as vscode from 'vscode';
 
