@@ -133,7 +133,7 @@
     "lint": "eslint src --ext ts,js --fix",
     "test": "node ./out/test/runTest.js",
     "install-wrtc": "cross-env DEBUG=true npm install @cubicleai/wrtc",
-    "init": "node ./scripts/init.js",
+    "init-wrtc-old": "node ./scripts/init.js",
     "init-dev": "node ./scripts/wrtc_backup/init-dev.js",
     "vsce-package": "vsce package",
     "deploy": "vsce publish",
@@ -166,9 +166,9 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@cubicleai/wrtc": "^0.6.1",
     "@mapbox/node-pre-gyp": "^1.0.11",
     "@peculiar/webcrypto": "^1.4.3",
+    "@roamhq/wrtc": "^0.7.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "bufferutil": "^4.0.7",
     "buildcheck": "^0.0.6",
