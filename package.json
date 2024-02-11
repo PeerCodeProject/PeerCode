@@ -2,7 +2,7 @@
   "name": "peercode",
   "displayName": "PeerCode",
   "description": "Realtime Collaborative Code Editor for vscode",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.86.0",
     "node": "^18.17.0"
@@ -134,13 +134,11 @@
     "lint": "eslint src --ext ts,js",
     "lint:fix": "eslint src --ext ts,js --fix",
     "test": "node ./out/test/runTest.js",
-    "install-wrtc": "cross-env DEBUG=true npm install @cubicleai/wrtc",
-    "init-wrtc-old": "node ./scripts/init.js",
-    "init-dev": "node ./scripts/wrtc_backup/init-dev.js",
     "vsce-package": "vsce package",
     "deploy": "vsce publish",
     "pre-release": "vsce publish --pre-release",
-    "postinstall": "patch-package"
+    "update:wrtc": "node ./scripts/dynamic-patching-wrtc.js",
+    "postinstall": "npm run update:wrtc"
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.23",
