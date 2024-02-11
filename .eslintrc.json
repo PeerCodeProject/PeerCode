@@ -94,6 +94,7 @@
     "plugin:security/recommended",
     "plugin:prettier/recommended",
     "plugin:sonarjs/recommended"
+//    "plugin:import/recommended"
   ],
   "ignorePatterns": [
     "node_modules",
