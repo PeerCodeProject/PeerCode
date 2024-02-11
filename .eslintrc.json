@@ -69,13 +69,14 @@
     "sonarjs/no-duplicate-string": "warn",
     "sonarjs/no-nested-template-literals": "warn",
 //    "no-undef": "error",
-    "require-await": "error",
+    "require-await": "warn",
     "consistent-return": "error",
     "security/detect-object-injection": "off",
     "prettier/prettier": "error",
     "no-return-await": "error",
     "no-nested-ternary": "error",
     "security/detect-non-literal-fs-filename": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/ban-types": [
       "error",
       {

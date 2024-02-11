@@ -599,6 +599,48 @@ const publishSignalingMessage = async (
   }
 };
 
+function publishChangesToPeers(room: Room, signalingConn: SignalingConnections, data: any): void {
+  const emitPeerChange = room.webrtcConns.has(data.from)
+    ? () => {
+        console.debug("emit peer change - do nothing");
+      }
+    : () =>
+        room.provider.emit("peers", [
+          {
+            removed: [],
+            added: [data.from],
+            webrtcPeers: Array.from(room.webrtcConns.keys()),
+            bcPeers: Array.from(room.bcConns),
+          },
+        ]);
+  switch (data.type) {
+    case "announce":
+      console.log("announce", data);
+      if (room.webrtcConns.size < room.provider.maxConnections) {
+        map.setIfUndefined(
+          room.webrtcConns,
+          data.from,
+          () => new WebrtcConn(signalingConn, true, data.from, room),
+        );
+        emitPeerChange();
+      }
+      break;
+    case "signal":
+      if (data.to === room.peerId) {
+        console.log("signal", data, room.peerId);
+        map
+          .setIfUndefined(
+            room.webrtcConns,
+            data.from,
+            () => new WebrtcConn(signalingConn, false, data.from, room),
+          )
+          .peer.signal(data.signal);
+        emitPeerChange();
+      }
+      break;
+  }
+}
+
 async function handleMessage(signalingConn: SignalingConnections, message: any): Promise<void> {
   switch (message.type) {
     case "publish": {
@@ -610,55 +652,16 @@ async function handleMessage(signalingConn: SignalingConnections, message: any):
       }
       const execMessage = (data: any): void => {
         const webrtcConnections = room.webrtcConns;
-        const peerId = room.peerId;
         if (
           !data ||
-          data.from === peerId ||
-          (data.to !== undefined && data.to !== peerId) ||
+          data.from === room.peerId ||
+          (data.to !== undefined && data.to !== room.peerId) ||
           room.bcConns.has(data.from)
         ) {
           // ignore messages that are not addressed to this conn, or from clients that are connected via broadcastchannel
           return;
         }
-        const emitPeerChange = webrtcConnections.has(data.from)
-          ? () => {
-              console.debug("emit peer change - do nothing");
-            }
-          : () =>
-              room.provider.emit("peers", [
-                {
-                  removed: [],
-                  added: [data.from],
-                  webrtcPeers: Array.from(room.webrtcConns.keys()),
-                  bcPeers: Array.from(room.bcConns),
-                },
-              ]);
-        switch (data.type) {
-          case "announce":
-            console.log("announce", data);
-            if (webrtcConnections.size < room.provider.maxConnections) {
-              map.setIfUndefined(
-                webrtcConnections,
-                data.from,
-                () => new WebrtcConn(signalingConn, true, data.from, room),
-              );
-              emitPeerChange();
-            }
-            break;
-          case "signal":
-            if (data.to === peerId) {
-              console.log("signal", data, peerId);
-              map
-                .setIfUndefined(
-                  webrtcConnections,
-                  data.from,
-                  () => new WebrtcConn(signalingConn, false, data.from, room),
-                )
-                .peer.signal(data.signal);
-              emitPeerChange();
-            }
-            break;
-        }
+        publishChangesToPeers(room, signalingConn, data);
       };
       if (room.key) {
         if (typeof message.data === "string") {

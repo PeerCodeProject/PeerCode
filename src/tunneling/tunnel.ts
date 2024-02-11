@@ -157,7 +157,17 @@ async function getContentData(res: Response): Promise<string> {
     : res.text();
 }
 
-function getRequestObject(content: unknown, req: http.IncomingMessage) {
+function getRequestObject(
+  content: unknown,
+  req: http.IncomingMessage,
+):
+  | {
+      headers: http.IncomingHttpHeaders;
+      method: string | undefined;
+      data: unknown;
+      url: string | undefined;
+    }
+  | { headers: http.IncomingHttpHeaders; method: string | undefined; url: string | undefined } {
   if (content !== null) {
     return {
       method: req.method,
