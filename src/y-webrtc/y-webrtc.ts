@@ -39,7 +39,7 @@ const messageTypes = {
 
 const MAX_CONNECTIONS = 20;
 
-const signalingConns = new Map<string, SignalingConn>();
+const signalingConns = new Map<string, SignalingConnections>();
 
 
 const rooms = new Map<string, Room>();
@@ -257,7 +257,7 @@ export class WebrtcConn {
   synced: boolean;
   peer: Peer.Instance;
 
-  constructor(signalingConn: SignalingConn, initiator: boolean, remotePeerId: string, room: Room) {
+  constructor(signalingConn: SignalingConnections, initiator: boolean, remotePeerId: string, room: Room) {
     log("establishing connection to ", logging.BOLD, remotePeerId);
     this.room = room;
     this.remotePeerId = remotePeerId;
@@ -580,7 +580,7 @@ const openRoom = (doc: Y.Doc, provider: WebrtcProvider, name: string, key: Crypt
   return room;
 };
 
-const publishSignalingMessage = async (conn: SignalingConn, room: Room, data: unknown) => {
+const publishSignalingMessage = async (conn: SignalingConnections, room: Room, data: unknown) => {
   if (room.key) {
     await cryptoutils.encryptJson(data as cryptoutils.EncryptTypes, room.key).then((encryptJson) => {
       conn.send({
@@ -594,7 +594,7 @@ const publishSignalingMessage = async (conn: SignalingConn, room: Room, data: un
   }
 };
 
-export class SignalingConn extends ws.WebsocketClient {
+export class SignalingConnections extends ws.WebsocketClient {
   providers = new Set<WebrtcProvider>();
   constructor(url: string) {
     super(url);
@@ -724,7 +724,7 @@ export class WebrtcProvider extends Observable<string> {
   maxConnections: number;
   filterBcConnections: boolean;
   shouldConnect: boolean;
-  signalingConnections: SignalingConn[];
+  signalingConnections: SignalingConnections[];
   peerOpts: Peer.Options;
   key: CryptoKey | null = null;
   room: Room | null = null;
@@ -776,7 +776,7 @@ export class WebrtcProvider extends Observable<string> {
       const signalingConn = map.setIfUndefined(
         signalingConns,
         url,
-        () => new SignalingConn(url)
+        () => new SignalingConnections(url)
       );
       this.signalingConnections.push(signalingConn);
       signalingConn.providers.add(this);

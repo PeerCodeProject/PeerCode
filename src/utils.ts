@@ -1,9 +1,10 @@
 import { Uri, Webview } from "vscode";
 import * as os from "os";
 
-const globalTemp: typeof globalThis = global;
+const globalTemp: typeof globalThis = globalThis;
 
 export function initGlobal() {
+    // @ts-expect-error need to set globalThis websocket
     globalTemp.WebSocket = require("ws");
     // process.env['LOG'] = '*';
 

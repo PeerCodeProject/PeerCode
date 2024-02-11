@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "CommonJS",
 		"target": "ESNEXT",
+	    // "moduleResolution": "NodeNext",
 		"lib": [
 			"ESNEXT",
 			// "DOM"
@@ -17,7 +18,7 @@
 		"noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 		// "noUnusedLocals": true,                /* Report errors on unused locals. */
-		"skipLibCheck": false,
+		"skipLibCheck": true,
 		"strict": true,                        /* Enable all strict type-checking options. */
 		"alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
 	},

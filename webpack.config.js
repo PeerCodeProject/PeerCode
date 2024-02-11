@@ -42,6 +42,10 @@ const extensionConfig = {
             loader: "node-loader",
           },
         ],
+        // generator: {
+        //   // keep original filenames and copy images to `dist/img/`
+        //   filename: '[name][ext]',
+        // },
       },
       {
         test: /\.ts$/,

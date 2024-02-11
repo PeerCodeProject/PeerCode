@@ -1,5 +1,11 @@
 
 
+interface RTCIceServer {
+    credential?: string;
+    urls: string | string[];
+    username?: string;
+}
+
 export const ICE_SERVERS: RTCIceServer[] =
     [
         {
