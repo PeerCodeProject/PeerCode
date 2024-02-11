@@ -1,26 +1,25 @@
 {
-	"compilerOptions": {
-		"module": "CommonJS",
-		"target": "ESNEXT",
-	    // "moduleResolution": "NodeNext",
-		"lib": [
-			"ESNEXT",
-			// "DOM"
-		],
-		"sourceMap": true,
-		"rootDir": "src",
-		"extendedDiagnostics": true,
-		// "explainFiles":true,
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ESNEXT",
+    // "moduleResolution": "NodeNext",
+    "lib": [
+      "ESNEXT"
+      // "DOM"
+    ],
+    "sourceMap": true,
+    "rootDir": "src",
+    "extendedDiagnostics": true,
+    // "explainFiles":true,
 
-		"forceConsistentCasingInFileNames": true,
-		/* Additional Checks */
-		"noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
-		"noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
-		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
-		// "noUnusedLocals": true,                /* Report errors on unused locals. */
-		"skipLibCheck": true,
-		"strict": true,                        /* Enable all strict type-checking options. */
-		"alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
-	},
-
+    "forceConsistentCasingInFileNames": true,
+    /* Additional Checks */
+    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
+    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
+    // "noUnusedParameters": true,  /* Report errors on unused parameters. */
+    // "noUnusedLocals": true,                /* Report errors on unused locals. */
+    "skipLibCheck": true,
+    "strict": true /* Enable all strict type-checking options. */,
+    "alwaysStrict": true /* Parse in strict mode and emit "use strict" for each source file. */
+  }
 }

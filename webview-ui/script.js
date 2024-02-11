@@ -53,7 +53,7 @@ awareness.on("change", (event) => {
     }
     const svgCircle = document.createElementNS(
       "http://www.w3.org/2000/svg",
-      "circle"
+      "circle",
     );
     //   <circle cx="50" cy="50" r="50"/>
     svgCircle.setAttribute("cx", pos.x);
@@ -74,7 +74,7 @@ const getSvgPathFromStroke = (stroke) => {
       acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
       return acc;
     },
-    ["M", ...stroke[0], "Q"]
+    ["M", ...stroke[0], "Q"],
   );
 
   d.push("Z");
@@ -103,7 +103,7 @@ const strokeStyle = {
 
 const getSvgStrokeFromYStroke = (ystroke) => {
   return getSvgPathFromStroke(
-    getStroke(ystroke.get("path").toArray(), strokeStyle)
+    getStroke(ystroke.get("path").toArray(), strokeStyle),
   );
 };
 
@@ -113,7 +113,7 @@ ystrokes.observe((event) => {
     item.content.getContent().forEach((ystroke) => {
       const svgPath = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "path"
+        "path",
       );
       svgPath.setAttribute("data-ystroke-id", ystroke.get("uuid"));
       svgPath.setAttribute("d", getSvgStrokeFromYStroke(ystroke));
@@ -145,9 +145,7 @@ ystrokes.observe((event) => {
     //   });
     // });
   });
-
 });
-
 
 /**
  * @type {Y.Map<Y.Array> | null}
@@ -178,7 +176,6 @@ svg.addEventListener("pointermove", (event) => {
 const clearButton = document.getElementById("clear-canvas");
 
 clearButton.addEventListener("click", () => {
-
   ydoc.transact(() => {
     ystrokes.forEach((element) => {
       ystrokes.delete(element);
@@ -187,7 +184,6 @@ clearButton.addEventListener("click", () => {
 
   // svg.querySelectorAll("path").forEach((path) => path.remove());
 });
-
 
 window.Y = Y;
 window.svg = svg;

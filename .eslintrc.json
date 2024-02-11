@@ -1,70 +1,103 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "project": "tsconfig.json"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "@typescript-eslint/naming-convention": [
-            "warn",
-            { 
-                "selector": "default",
-                "format": [
-                    "camelCase",
-                    "PascalCase"
-                ],
-                "leadingUnderscore": "allow"
-            },
-            { 
-                "selector": "variable",
-                "modifiers": [
-                    "const"
-                ],
-                "format": [
-                    "camelCase",
-                    "PascalCase",
-                    "UPPER_CASE"
-                ]
-            },
-            { 
-                "selector": "classProperty",
-                "modifiers": [
-                    "private"
-                ],
-                "format": [
-                    "camelCase",
-                    "PascalCase"
-                ]
-            }
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "security",
+    "prettier",
+    "sonarjs"
+  ],
+  "rules": {
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "default",
+        "format": [
+          "camelCase",
+          "PascalCase"
         ],
-        "@typescript-eslint/no-floating-promises": "warn",
-        "@typescript-eslint/no-inferrable-types": "off", 
-        "@typescript-eslint/no-unused-vars": [ 
-            "warn",
-            { 
-                "args": "none"
-            }
+        "leadingUnderscore": "allow"
+      },
+      {
+        "selector": "variable",
+        "modifiers": [
+          "const"
         ],
-        "@typescript-eslint/semi": "warn",
-        "curly": "warn", 
-        "eqeqeq": "warn", 
-        "no-throw-literal": "warn",
-        "semi": "off"
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended"
+        "format": [
+          "camelCase",
+          "PascalCase",
+          "UPPER_CASE"
+        ]
+      },
+      {
+        "selector": "classProperty",
+        "modifiers": [
+          "private"
+        ],
+        "format": [
+          "camelCase",
+          "PascalCase"
+        ]
+      }
     ],
-    "ignorePatterns": [
-        "node_modules",
-        "out",
-        "dist",
-        "**/*.d.ts"
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none"
+      }
+    ],
+    "@typescript-eslint/semi": "warn",
+    "curly": "warn",
+    "eqeqeq": "error",
+    "no-throw-literal": "warn",
+    "semi": "off",
+    "@typescript-eslint/explicit-function-return-type": ["error", {
+      "allowExpressions": true,
+      "allowTypedFunctionExpressions": true
+    }],
+    "@typescript-eslint/explicit-module-boundary-types": ["error", {
+      "allowArgumentsExplicitlyTypedAsAny": true
+    }],
+    "sonarjs/cognitive-complexity": "warn",
+    "sonarjs/no-duplicate-string": "warn",
+    "sonarjs/no-nested-template-literals": "warn",
+//    "no-undef": "error",
+    "require-await": "error",
+    "consistent-return": "error",
+    "security/detect-object-injection": "off",
+    "prettier/prettier": "error",
+    "no-return-await": "error",
+    "no-nested-ternary": "error",
+    "security/detect-non-literal-fs-filename": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "extendDefaults": true,
+        "types": {
+          "{}": false
+        }
+      }
     ]
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:security/recommended",
+    "plugin:prettier/recommended",
+    "plugin:sonarjs/recommended"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "out",
+    "dist",
+    "**/*.d.ts"
+  ]
 }

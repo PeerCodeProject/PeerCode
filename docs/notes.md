@@ -15,6 +15,7 @@
 ### Start Session / Create new room
 
 command:
+
 > `peercode: Start Session`
 
 Inputs:
@@ -28,6 +29,7 @@ To share session user must have opened Folder which will be shared to other peer
 ### Join Session / Join room
 
 command:
+
 > `peercode: Join Session`
 
 Inputs:
@@ -66,3 +68,4 @@ In Explorer, tree view will be opened for Shared Folder from Session/Room owner
         }
       ]
     },
+```

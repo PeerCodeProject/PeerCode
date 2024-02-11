@@ -9,6 +9,18 @@ on:
     types:
       - created
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+      - run: npm ci
+      - run: npm run lint
+
   build:
     strategy:
       matrix:
@@ -57,8 +69,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.x
-      - run: npm install
-#      - run: npm run init
+      - run: npm ci
+      #      - run: npm run init
       - shell: pwsh
         run: echo "target=${{ matrix.platform }}-${{ matrix.arch }}" >> $env:GITHUB_ENV
       - run: npx vsce package --target ${{ env.target }}

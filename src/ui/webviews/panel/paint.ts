@@ -1,87 +1,80 @@
 import * as vscode from "vscode";
-import {getUri} from "../../../utils";
-import {IConfig} from "../../../config";
+import { getUri } from "../../../utils";
+import { IConfig } from "../../../config";
 
 export class DrawingPanel {
-    public static currentPanel: DrawingPanel | undefined;
-    private disposables: vscode.Disposable[] = [];
+  public static currentPanel: DrawingPanel | undefined;
+  private disposables: vscode.Disposable[] = [];
 
-    private constructor(private readonly  panel: vscode.WebviewPanel, extensionUri: vscode.Uri,
-                        private readonly config: IConfig, private roomname: string, private username: string) {
-        this.panel.onDidDispose(this.dispose, null, this.disposables);
-        this.panel.webview.html = this.getWebviewContent(
-            this.panel.webview,
-            extensionUri
-        );
+  private constructor(
+    private readonly panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    private readonly config: IConfig,
+    private roomName: string,
+    private username: string,
+  ) {
+    this.panel.onDidDispose(this.dispose, null, this.disposables);
+    this.panel.webview.html = this.getWebviewContent(this.panel.webview, extensionUri);
+  }
+
+  public static render(
+    extensionUri: vscode.Uri,
+    config: IConfig,
+    roomname: string,
+    username: string,
+  ): void {
+    if (DrawingPanel.currentPanel) {
+      DrawingPanel.currentPanel.panel.reveal(vscode.ViewColumn.One);
+    } else {
+      const panel = vscode.window.createWebviewPanel(
+        "super paint",
+        "paint: " + roomname,
+        vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+          retainContextWhenHidden: true,
+          localResourceRoots: [vscode.Uri.joinPath(extensionUri, "webview-ui")],
+        },
+      );
+
+      DrawingPanel.currentPanel = new DrawingPanel(panel, extensionUri, config, roomname, username);
     }
+  }
 
-    public static render(extensionUri: vscode.Uri, config: IConfig, roomname: string, username: string) {
-        if (DrawingPanel.currentPanel) {
-            DrawingPanel.currentPanel.panel.reveal(vscode.ViewColumn.One);
-        } else {
-            const panel = vscode.window.createWebviewPanel(
-                "super paint",
-                "paint: " + roomname,
-                vscode.ViewColumn.One,
-                {
-                    enableScripts: true,
-                    retainContextWhenHidden: true,
-                    localResourceRoots: [
-                        vscode.Uri.joinPath(extensionUri, "webview-ui"),
-                    ]
-                }
-            );
+  public dispose(): void {
+    DrawingPanel.currentPanel = undefined;
 
-            DrawingPanel.currentPanel = new DrawingPanel(panel, extensionUri, config, roomname, username);
-        }
+    this.panel.dispose();
+
+    while (this.disposables.length) {
+      const disposable = this.disposables.pop();
+      if (disposable) {
+        disposable.dispose();
+      }
     }
+  }
 
-    public dispose() {
-        DrawingPanel.currentPanel = undefined;
+  private getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri): string {
+    // const mainUri = getUri(webview, extensionUri, ["webview-ui", "main.js"]);
+    const scriptUri = getUri(webview, extensionUri, ["webview-ui", "script.js"]);
+    const styleUri = getUri(webview, extensionUri, ["webview-ui", "style.css"]);
+    const vscodeStyleUri = getUri(webview, extensionUri, ["webview-ui", "vscode.css"]);
+    const toolkitUri = getUri(webview, extensionUri, [
+      "node_modules",
+      "@vscode",
+      "webview-ui-toolkit",
+      "dist",
+      "toolkit.js",
+    ]);
+    const perfectFreeHandLib = getUri(webview, extensionUri, [
+      "node_modules",
+      "perfect-freehand",
+      "esm",
+      "index.js",
+    ]);
+    //    <script type="module" src="${perfectFreeHandLib}" ></script>
 
-        this.panel.dispose();
-
-        while (this.disposables.length) {
-            const disposable = this.disposables.pop();
-            if (disposable) {
-                disposable.dispose();
-            }
-        }
-    }
-
-    private getWebviewContent(
-        webview: vscode.Webview,
-        extensionUri: vscode.Uri
-    ) {
-        // const mainUri = getUri(webview, extensionUri, ["webview-ui", "main.js"]);
-        const scriptUri = getUri(webview, extensionUri, [
-            "webview-ui",
-            "script.js",
-        ]);
-        const styleUri = getUri(webview, extensionUri, [
-            "webview-ui",
-            "style.css",
-        ]);
-        const vscodeStyleUri = getUri(webview, extensionUri, [
-            "webview-ui",
-            "vscode.css",
-        ]);
-        const toolkitUri = getUri(webview, extensionUri, [
-            "node_modules",
-            "@vscode",
-            "webview-ui-toolkit",
-            "dist",
-            "toolkit.js",
-        ]);
-        const perfectFreeHandLib = getUri(webview, extensionUri, [
-            "node_modules",
-            "perfect-freehand",
-            "esm",
-            "index.js"
-        ]);
-        //    <script type="module" src="${perfectFreeHandLib}" ></script>
-
-        return /*html*/ `
+    return /*html*/ `
       <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -92,7 +85,7 @@ export class DrawingPanel {
             <link href="${vscodeStyleUri}" rel="stylesheet" type="text/css" />
             <script> 
                 window.username = "${this.username}";
-                window.roomname = "${this.roomname}";
+                window.roomname = "${this.roomName}";
                 window.serverUrl = "${this.config.getParamSting("webrtcServerURL")}";
                 window.drawFreeHandLib = "${perfectFreeHandLib}";
 
@@ -116,7 +109,5 @@ export class DrawingPanel {
        
       </html>
     `;
-    }
-
-
+  }
 }
