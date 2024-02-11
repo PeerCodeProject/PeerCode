@@ -1,4 +1,4 @@
-import { Sess } from "../session/sess";
+import { Session } from "../session/session";
 
 export interface IConnector {
 
@@ -8,7 +8,7 @@ export interface IConnector {
 }
 
 export interface IConnection {
-    getSession(): Sess;
+    getSession(): Session;
 }
 
 export class ConnAuthInfo {

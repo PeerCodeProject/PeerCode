@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { Sess } from '../../session/sess';
+import { Session } from '../../session/session';
 import { getAllFiles } from './fileSystemManager';
 
 export class FileSharer {
@@ -8,7 +8,7 @@ export class FileSharer {
     constructor(public workspacePath: string | null) {
     }
 
-    async shareWorkspace(sess: Sess) {
+    async shareWorkspace(sess: Session) {
         if (!this.workspacePath) {
             console.error("open workspace!");
             return;
@@ -19,12 +19,12 @@ export class FileSharer {
             try {
                 await sess.shareLocalFile(file);
             } catch (error) {
-                console.log("error sharing file: " + file);                
+                console.log("error sharing file: " + file);
             }
         }
     }
 
-    async shareFile(sess: Sess, filePath: vscode.Uri) {
+    async shareFile(sess: Session, filePath: vscode.Uri) {
         await sess.shareLocalFile(filePath);
     }
 }

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { TreeNode, SessionTreeNode, SessionsTreeNode, PeerTreeNode } from "./treeNodes";
-import { Sess, SessionListener } from "../../session/sess";
-import { SessManager } from "../../session/sessManager";
+import { Session, SessionListener } from "../../session/session";
+import { SessionManager } from "../../session/sessionManager";
 import { Peer, PeerConnectionListener } from "../../peer/peer";
 
 type EmmitedEventType = void | TreeNode | TreeNode[] | null | undefined;
@@ -11,18 +11,18 @@ export class PeerCodeSessionTreeDataProvider implements vscode.TreeDataProvider<
 
     private onDidChangeTreeDataEventEmitter: vscode.EventEmitter<EmmitedEventType> = new vscode.EventEmitter<EmmitedEventType>();
 
-    constructor(private manager: SessManager) { }
+    constructor(private manager: SessionManager) { }
     onPeerAdded(peer: Peer): void {
         this.onDidChangeTreeDataEventEmitter.fire();
     }
     onPeerRemoved(peer: Peer): void {
         this.onDidChangeTreeDataEventEmitter.fire();
     }
-    onAddSession(session: Sess): void {
+    onAddSession(session: Session): void {
         session.getPeerManager().registerListener(this);
         this.onDidChangeTreeDataEventEmitter.fire();
     }
-    onRemoveSession(session: Sess): void {
+    onRemoveSession(session: Session): void {
         this.onDidChangeTreeDataEventEmitter.fire();
     }
 
@@ -48,12 +48,12 @@ export class PeerCodeSessionTreeDataProvider implements vscode.TreeDataProvider<
     }
 
 
-    private getPeers(session: Sess): PeerTreeNode[] {
+    private getPeers(session: Session): PeerTreeNode[] {
         return session.getSessionPeers().map((peer: Peer) => new PeerTreeNode(peer));
     }
 
     private getSessions(): SessionTreeNode[] {
         return this.manager.getSessions()
-            .map((sess: Sess) => new SessionTreeNode(sess));
+            .map((sess: Session) => new SessionTreeNode(sess));
     }
 }

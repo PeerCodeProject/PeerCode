@@ -353,7 +353,7 @@ const announceSignalingInfo = (room: Room) => {
     // only subscribe if connection is established, otherwise the conn automatically subscribes to all rooms
     if (conn.connected) {
       conn.send({ type: "subscribe", topics: [room.name] });
-      if (room.webrtcConns.size < room.provider.maxConns) {
+      if (room.webrtcConns.size < room.provider.maxConnections) {
         await publishSignalingMessage(conn, room, {
           type: "announce",
           from: room.peerId,
@@ -364,7 +364,7 @@ const announceSignalingInfo = (room: Room) => {
 };
 
 const broadcastBcPeerId = async (room: Room) => {
-  if (room.provider.filterBcConns) {
+  if (room.provider.filterBcConnections) {
     // broadcast peerId via broadcastchannel
     const encoderPeerIdBc = encoding.createEncoder();
     encoding.writeVarUint(encoderPeerIdBc, messageTypes.BcPeerId);
@@ -650,7 +650,7 @@ export class SignalingConn extends ws.WebsocketClient {
             switch (data.type) {
               case "announce":
                 console.log("announce", data);
-                if (webrtcConns.size < room.provider.maxConns) {
+                if (webrtcConns.size < room.provider.maxConnections) {
                   map.setIfUndefined(
                     webrtcConns,
                     data.from,
@@ -699,13 +699,32 @@ export class SignalingConn extends ws.WebsocketClient {
   }
 }
 
+export interface WebRtcEvents{
+    clientRequest: (port: number, data: string) => void;
+    serverResponse: (port: number, data: string) => void;
+    startSharingPort: (data: number) => void;
+    runDockerRemote: (data: string) => void;
+    terminalOutData: (data: string) => void;
+    startPeerTerminal: (data: string) => void;
+    terminalCommand: (data: string) => void;
+    tunneledClientRequest: (port: number, data: string) => void;
+    tunneledServerResponse: (port: number, data: string) => void;
+    peers: (data: { added: string[], removed: string[], webrtcPeers: string[], bcPeers: string[] }) => void;
+    RemotePeerTerminal: (data: string) => void;
+    peerTerminalCommand: (data: string) => void;
+    synced: (data: { synced: boolean }) => void;
+    runDocker: (data: string) => void;
+    TerminalOutPut: (data: string) => void;
+    sharePort: (data: number) => void;
+}
+
 export class WebrtcProvider extends Observable<string> {
 
   awareness: Awareness;
-  maxConns: number;
-  filterBcConns: boolean;
+  maxConnections: number;
+  filterBcConnections: boolean;
   shouldConnect: boolean;
-  signalingConns: SignalingConn[];
+  signalingConnections: SignalingConn[];
   peerOpts: Peer.Options;
   key: CryptoKey | null = null;
   room: Room | null = null;
@@ -718,11 +737,11 @@ export class WebrtcProvider extends Observable<string> {
     private password: string | null = null
   ) {
     super();
-    this.filterBcConns = true;
+    this.filterBcConnections = true;
     this.awareness = new awarenessProtocol.Awareness(doc);
     this.shouldConnect = false;
-    this.signalingConns = [];
-    this.maxConns = MAX_CONNECTIONS;
+    this.signalingConnections = [];
+    this.maxConnections = MAX_CONNECTIONS;
     this.peerOpts = {
       wrtc: wrtc,
       config: {
@@ -759,7 +778,7 @@ export class WebrtcProvider extends Observable<string> {
         url,
         () => new SignalingConn(url)
       );
-      this.signalingConns.push(signalingConn);
+      this.signalingConnections.push(signalingConn);
       signalingConn.providers.add(this);
     });
     if (this.room) {
@@ -769,7 +788,7 @@ export class WebrtcProvider extends Observable<string> {
 
   async disconnect() {
     this.shouldConnect = false;
-    this.signalingConns.forEach((conn) => {
+    this.signalingConnections.forEach((conn) => {
       conn.providers.delete(this);
       if (conn.providers.size === 0) {
         conn.destroy();

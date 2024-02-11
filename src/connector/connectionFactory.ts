@@ -1,10 +1,10 @@
 import { IConfig } from "../config";
-import { IConnector } from "./conn";
+import { IConnector } from "./connection";
 import { YWebRTCConnector, YWebSocketConnector } from "./yjs/YJSConnector";
 
 
 
-export class ConnFactory {
+export class ConnectionFactory {
 
     constructor(private config: IConfig) {
     }

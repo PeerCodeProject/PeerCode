@@ -1,14 +1,19 @@
 #!/usr/bin/env node
-import { Observable } from 'lib0/observable';
+import {Observable} from 'lib0/observable';
 import * as vscode from 'vscode';
 
-import { HostTerminal, PeerTerminal } from './pty';
+import {HostTerminal, PeerTerminal} from './pty';
 
 
-// import { createReadStream } from 'fs';
+interface ShareTerminalEvents {
+    startPeerTerminal: () => void;
+    terminalOutData: (data: string) => void;
+    peerTerminalCommand: (command: string) => void;
+}
+
 export function shareTerminalWithPeers(provider: Observable<string>, workspacePath: string) {
     const pty = new HostTerminal(workspacePath, (data: string) => {
-        provider.emit("terminalOutData" ,[data]);
+        provider.emit("terminalOutData", [data]);
     });
     const options = {
         name: 'peercode terminal',
@@ -24,6 +29,12 @@ export function shareTerminalWithPeers(provider: Observable<string>, workspacePa
         // terminal.sendText(command, true);
     });
 
+}
+
+interface RegisterRemotePeerTerminalEvents {
+    RemotePeerTerminal: () => void;
+    terminalCommand: (command: string) => void;
+    TerminalOutPut: (data: string) => void;
 }
 
 export function RegisterRemotePeerTerminalListener(provider: Observable<string>, workspacePath: string) {

@@ -4,10 +4,10 @@ import { WebsocketProvider } from "y-websocket";
 import { Observable } from 'lib0/observable';
 
 export interface YjsProviderWrapper {
-    getAweateness(): Awareness;
+    getAwareness(): Awareness;
     supportsTunneling(): boolean;
     supportsDocker(): boolean;
-    getPorvider(): Observable<string>; // todo change
+    getProvider(): Observable<string>; // todo change
 }
 
 export class RTCProvider implements YjsProviderWrapper {
@@ -22,11 +22,11 @@ export class RTCProvider implements YjsProviderWrapper {
         return true;
     }
 
-    getAweateness(): Awareness {
+    getAwareness(): Awareness {
         return this.provider.awareness;
     }
 
-    getPorvider(): Observable<string> {
+    getProvider(): Observable<string> {
         return this.provider;
     }
 }
@@ -43,11 +43,11 @@ export class SocketProvider implements YjsProviderWrapper {
         return false;
     }
 
-    getAweateness(): Awareness {
+    getAwareness(): Awareness {
         return this.provider.awareness;
     }
 
-    getPorvider(): Observable<string> {
+    getProvider(): Observable<string> {
         return this.provider;
     }
 }

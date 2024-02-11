@@ -1,7 +1,7 @@
 import path = require("path");
 import { DockerRunner } from "./docker";
 import * as vscode from 'vscode';
-import { Sess } from '../session/sess';
+import { Session } from '../session/session';
 import { FileSharer } from "../core/fs/fileSharer";
 import { Observable } from 'lib0/observable';
 import { getWorkspacePath, makeFileSync } from '../core/fs/fileSystemManager';
@@ -16,7 +16,7 @@ export class DockerService extends BaseObservable<DockerPortListener>{
         super();
     }
 
-    async runDockerLocallyAndShare(workspacePath: string, session: Sess) {
+    async runDockerLocallyAndShare(workspacePath: string, session: Session) {
         const pathToLogs = await this.runProject(workspacePath, session.getRoomName());
         const logUri = vscode.Uri.file(pathToLogs);
         await this.fileSharer.shareFile(session, logUri);
@@ -63,12 +63,12 @@ export class DockerService extends BaseObservable<DockerPortListener>{
     }
 
 
-    public runDockerRemote(session: Sess) {
-        const provider = session.provider.getPorvider();
+    public runDockerRemote(session: Session) {
+        const provider = session.provider.getProvider();
         provider.emit("runDockerRemote", [session.getUsername()]);
     }
 
-    public listenToDockerRun(provider: Observable<string>, session: Sess) {
+    public listenToDockerRun(provider: Observable<string>, session: Session) {
         provider.on("runDocker", async (args: string[]) => {
             console.log("run docker remotely");
             const wsPath = getWorkspacePath();

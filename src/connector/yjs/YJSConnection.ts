@@ -4,30 +4,30 @@ import { YjsBinder } from "../../core/bind/binder";
 import FileShareManager from "../../core/bind/fileShareManager";
 import { FileSystemManager } from "../../core/fs/fileSystemManager";
 import { PeerManager } from "../../peer/peer";
-import { Sess } from "../../session/sess";
-import { IConnection } from "../conn";
+import { Session } from "../../session/session";
+import { IConnection } from "../connection";
 import { YjsProviderWrapper } from "./provider";
 
 export class YjsConnection implements IConnection {
 
-    private readonly session: Sess;
+    private readonly session: Session;
     constructor(private provider: YjsProviderWrapper, private doc: Doc,
         private username: string, private room: string,
         private isOwner: boolean) {
         this.session = this.createNewSession();
     }
 
-    private createNewSession(): Sess {
+    private createNewSession(): Session {
         const peerManager = new PeerManager();
         const fileSystemManager = FileSystemManager.getInstace();
         const yjsBinder = new YjsBinder(this.doc, this.username, peerManager);
         const fileShareManager = new FileShareManager(yjsBinder, fileSystemManager);
         yjsBinder.setRemoteFileListener(fileShareManager);
-        return new Sess(this.room, this.username, peerManager,
+        return new Session(this.room, this.username, peerManager,
              fileShareManager, this.provider, this.isOwner);
     }
 
-    getSession(): Sess {
+    getSession(): Session {
         return this.session;
     }
 

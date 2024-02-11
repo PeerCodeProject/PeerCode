@@ -5,6 +5,15 @@ import fetch, {RequestInit, Response, Headers} from "node-fetch";
 import {Observable} from 'lib0/observable';
 import * as vscode from 'vscode';
 
+interface DockerPortListenerEvents {
+    clientRequest: (port: number, request: string) => void;
+    serverResponse: (port: number, response: string) => void;
+    startSharingPort: (port: number) => void;
+    sharePort: (port: number) => void;
+    tunneledClientRequest: (port: number, request: string) => void;
+    tunneledServerResponse: (port: number, response: string) => void;
+}
+
 export class DockerPortListener {
     constructor(private provider: Observable<string>) {
     }

@@ -3,7 +3,7 @@ import * as Y from 'yjs';
 
 import { tunnelClient } from '../../tunneling/tunnel';
 import { WebrtcProvider } from '../../y-webrtc/y-webrtc';
-import { ConnAuthInfo, IConnection, IConnector } from '../conn';
+import { ConnAuthInfo, IConnection, IConnector } from '../connection';
 import { RTCProvider, SocketProvider } from './provider';
 import { YjsConnection } from './YJSConnection';
 import { getWorkspacePath } from '../../core/fs/fileSystemManager';

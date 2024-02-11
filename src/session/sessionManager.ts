@@ -1,33 +1,33 @@
 import * as vscode from 'vscode';
 
-import { ConnAuthInfo, IConnector } from '../connector/conn';
+import { ConnAuthInfo, IConnector } from '../connector/connection';
 import { BaseObservable } from '../core/observable';
 import { DockerService } from '../runner/dockerService';
 import { input } from '../utils';
-import { Sess, SessionListener } from './sess';
+import { Session, SessionListener } from './session';
 
-export class SessManager extends BaseObservable<SessionListener> {
-    private sessions: Sess[] = [];
+export class SessionManager extends BaseObservable<SessionListener> {
+    private sessions: Session[] = [];
 
     constructor(private connector: IConnector) {
         super();
     }
 
-    async createSession(dockerService: DockerService, isSessionOwner: boolean = false): Promise<Sess> {
+    async createSession(dockerService: DockerService, isSessionOwner: boolean = false): Promise<Session> {
         const authInfo = await getSessionInfo(this.connector.supportsPassword());
         const conn = await this.connector.connect(authInfo, isSessionOwner);
         const session = conn.getSession();
-        dockerService.listenToDockerRun(session.provider.getPorvider(), session);
+        dockerService.listenToDockerRun(session.provider.getProvider(), session);
         this.addSession(session);
         return session;
     }
 
-    addSession(session: Sess) {
+    addSession(session: Session) {
         this.sessions.push(session);
         this.notify(async (listener) => listener.onAddSession(session));
     }
 
-    getSessions(): Sess[] {
+    getSessions(): Session[] {
         return this.sessions;
     }
 
